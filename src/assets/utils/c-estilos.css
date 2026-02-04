@@ -1,0 +1,38 @@
+/* C-ESTILOS PARA TODO MODULO UPLOAD */
+
+/* MODULO 1 COURSES - COURSES FORM */
+.courses-table{
+    height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* MODULO 2 ARCHIVOS*/
+.files-list{
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+
+/* MODULO 3 USERS - USERS FORM */
+.profiles{
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.user-profile{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-item:hover{
+    transition: background-color 0.5s, color 0.5s;
+    background-color: rgb(144, 144, 247);
+}
+
+.user-item:hover::after{
+    transition: background-color 0.5s, color 0.5s;
+}

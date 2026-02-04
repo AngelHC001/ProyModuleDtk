@@ -1,0 +1,219 @@
+/* A-ESTILOS ALL INDEX SECTIONS EFFECTS*/
+
+/* ------------------- ALLIES BANNER -------------------*/
+.allies{
+  background-color: rgba(243, 248, 255,0.25);
+  backdrop-filter: blur(3px);
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(2px);
+  overflow: hidden; 
+}
+
+/* DIRIGIENDOSE A LA IMAGEN*/
+.ally{
+    position: relative;
+    opacity: 0;
+    transition: 0.5s ease-in-out;
+}
+
+/* FADE ALLIES DEL CENTRO*/
+.ally-center{
+    transform: translateY(-50px);
+}
+
+.visible-c{
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/*ALIANZAS IZQ Y DER*/
+.ally-left { transform: translateX(-50px);}
+.ally-right{ transform: translateX(50px); }
+
+.visible-s{
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.visible-c:hover, .visible-s:hover{
+    transition: transform .3s ease-in-out;
+    transform: scale(1.1);
+} 
+
+/* ------------------- ABOUT SECTION STYLES -------------------*/
+.info-izq > p, .info-der > p {
+    font-size: 18px;
+}
+
+/* ABOUT ELEMENTS EFFECT PREPARATION */
+.pic-about, #mision, #mision2, .info-izq, .info-der {
+    opacity: 0; 
+    position: relative;
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-out;
+}
+
+.pic-about {
+    transform: translateY(50px); 
+}
+
+.frags{
+    overflow: hidden;
+}
+
+#mision {
+    transform: translateY(30px); 
+}
+
+#mision2 {
+    transform: translateY(30px);
+}
+
+.info-izq {
+    transform: translateX(-100px); 
+}
+
+.info-der {
+    transform: translateX(100px); 
+}
+
+.pic-about:hover{
+    transform: scale(1.02) .2s ease-in-out;
+}
+
+/* --------------------- WHY SECTION OBJECTS --------------------------*/
+.main-why{
+    overflow: hidden;
+}
+
+.info-side{
+    opacity: 0; 
+    transform: translateX(-100px); 
+    transition: all 0.8s ease-out;
+}
+
+.img-side{
+    opacity: 0;
+    transform: translateX(100px); 
+    transition: all 0.8s ease-out;
+}
+
+/* activation class*/
+.info-visible{
+    opacity: 1;
+    transform: translateX(0); 
+}
+
+/* ------------ SERVICE CARDS SECTION -------------*/
+.card-main{
+    overflow: hidden;
+}
+
+.card-slide{
+    opacity: 0;
+    transform: translateX(100px); 
+    transition: all 0.6s ease-out;
+}
+
+.card-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.card-visible:hover{
+    transition: transform .3s ease-in-out;
+    transform: translateY(-15px);
+}
+
+/*---------------- COURSES EFFECT SECTION ------------------*/
+.bg-bars {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.col-info, .col-courses{
+    position: relative;
+    width: 100%;
+    padding: 20px;
+    z-index:25;
+}
+
+.green-set{   
+    /*position: absolute;*/
+    /*z-index: 10;*/
+    top: 15px;
+    left: 0; 
+}
+
+.blue-set{ 
+    /*position: absolute;*/
+    /*z-index: 10;*/
+    top: 50px;
+    right: 0;  
+}
+
+.bar-left { 
+    transform: translateX(-100vw);
+    transition: transform 0.8s ease-out;
+}
+
+.bar-right {
+    transform: translateX(100vw);
+    transition: transform 0.8s ease-out;
+}
+
+.slide-in {
+    transform: translateX(0);
+}
+
+.icon-container {
+    transform: translateX(100vw);
+    transition: transform 0.8s ease-out; 
+}
+
+.icon-container img{
+    transition: transform .3s;
+}
+
+.icon-container img:hover{
+    transition: transform .3s ease-in-out;
+    transform: scale(1.2);
+}
+
+/* Clases para la rotación final (jQuery) */
+.rotate-left {
+    transform: rotate(-7deg);
+}
+.rotate-right {
+    transform: rotate(7deg);
+}
+
+/*---------- LAST CAPTION ----------- */
+.last-caption{
+    opacity: 0;
+    transform: translateY(60px);
+    transition: all 0.5s ease-in-out;
+}
+
+.lc-active{
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .allies img {
+        width: auto;
+        height: auto;
+        margin: 10px;
+        padding: auto;
+    }
+
+    .img-side{
+        display: none;
+    }
+
+    .card-main{
+        margin: 5px;
+    }
+
+}
