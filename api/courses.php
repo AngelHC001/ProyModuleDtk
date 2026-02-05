@@ -19,7 +19,7 @@ function CreateFolder(string $carpetaCurso){
 
         //EL DIRECTORIO EXISTE SIEMPRE
         $directorio = "$endpoint/$carpetaCurso";
-        $json_empty = [["id" => 0000,  "archivo" => "curso-num.pdf"]]; //valor default
+        $json_empty = [["id" => "0000",  "archivo" => "curso-num.pdf"]]; //valor default
         $json_data = json_encode($json_empty,JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 
         //CREAR CARPETA (MKDIR) Y JSON (FILEPUT)
@@ -106,7 +106,7 @@ class CoursesController {
         $year = $datos['year'] ?? '';
         $key = random_int(100,1000);
         
-        $nombreCarpeta = "$year-$sigla";
+        $nombreCarpeta = $year . "_" . $sigla;
         //SI CREA LA CARPETA REGISTRA EL SQL
         if(CreateFolder($nombreCarpeta)){
             $insert = "INSERT INTO CURSO VALUES ($id,'$sigla','$nombre',$key,$year)";
@@ -140,13 +140,13 @@ class CoursesController {
         $sig = $datos['sigla'] ?? '';
         $year = $datos['year'] ?? '';
 
-        $folderTarget = "$year-$sig";
+        $folderTarget = $year . "_" . $sig;
         if(EraseFolder($folderTarget)){
             //BORRAR REGISTRO
             $delete = "DELETE FROM CURSO WHERE IDQR = $id AND SIGLA = '$sig' AND ANIO = $year";
             $req = mysqli_query($mysqli,$delete);
             if($req){
-                return ["success" => true, "message" => "CARPETA ELIMINADO"];
+                return ["success" => true, "message" => "CARPETA ELIMINADA"];
             }
             else{
                 return ["success" => false, "message" => "ERROR AL ELIMINAR"];

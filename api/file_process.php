@@ -28,10 +28,9 @@ class FilesController {
         }
         
         //DIRECTORIO FIJO
-        $carpeta = trim("$year-$sigla");
+        $carpeta = $year . "_" . $sigla;
         $endpoint = "../doc-point/certificados/$carpeta";
         
-           //$archivo = "$sigla-$num.pdf";   //para archivo
         //SI NO EXISTE CANCELAR
         if(!is_dir($endpoint)){
             return ["success" => false, "message" => "LA CARPETA NO EXISTE"];
@@ -74,38 +73,55 @@ class FilesController {
     
     //DELETE
     public function DeleteFile(){
-        /*
-       
-        //Capturar el JSON que envía React
-        $json = file_get_contents('php://input'); //CHECAR
+        //Capturar el JSON del frontend
+        $json = file_get_contents('php://input'); 
         $datos = json_decode($json, true);
 
         if (!$datos) {
             throw new Exception("No se recibieron datos válidos");
         }
 
-        //Extraer credenciales
-        $id = $datos['id'] ?? '';
-        $sig = $datos['sigla'] ?? '';
-        $year = $datos['year'] ?? '';
+        $pathTarget = $datos['rutaArchivo'] ?? ''; //carpeta/archivo
+        $endpoint = "../doc-point/certificados";
+        $target = $endpoint . "/" . $pathTarget; 
 
-        $folderTarget = "$year-$sig";
-        if(EraseFolder($folderTarget)){
-            //BORRAR REGISTRO
-            $delete = "DELETE FROM CURSO WHERE IDQR = $id AND SIGLA = '$sig' AND ANIO = $year";
-            $req = mysqli_query($mysqli,$delete);
-            if($req){
-                return ["success" => true, "message" => "CARPETA ELIMINADO"];
+        //Carpeta y archivo Existen?
+        if(file_exists($target)){
+            if(unlink($target)){
+                //ReescribirJSON
+                $justFolder = explode("/",$pathTarget)[0]; //solo YYYY_FOLDER
+                $jsonPath = "../doc-point/" . $justFolder . ".json";
+                $jsonString = file_get_contents($jsonPath);
+                $datos = json_decode($jsonString, true);
+                //existe el JSON?
+                if(!$datos){
+                    return ["success" => false, "message" => "NO EXISTE ARCHIVO DE ESCRITURA"];
+                }
+
+                //BORRAR ELEMENTO ESCRITO DEL JSON
+                if(is_array($datos)){
+                    $newData = array_filter($datos,function ($item) use($pathTarget){
+                        return $item['ruta'] !== $pathTarget;
+                    });
+                }
+
+                $newData = array_values($newData);
+                //GUARDAR CAMBIOS
+                if (file_put_contents($jsonPath, json_encode($newData,JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))) {
+                    return ["success" => true, "message" => "ARCHIVO ELIMINADO"];
+                }
+                else{
+                    return ["success" => false, "message" => "FALLO EN REESCRIBIR (fileput)"];
+                }
             }
             else{
-                return ["success" => false, "message" => "ERROR AL ELIMINAR"];
+                 return ["success" => false, "message" => "FALLO EN EL BORRADO (unlink)"];
             }
         }
         else
         {
-            return ["success" => false, "message" => "LA CARPETA NO EXISTEN"];
+            return ["success" => false, "message" => "FALLO EN EL BORRADO (File exists)"];
         }
-        */
     }
         
 }
@@ -119,14 +135,13 @@ try {
             echo json_encode($controller->UploadFile());
             break;
         
-        /*
         case 'DELETE':
-            echo json_encode($controller->DeleteFile());
-            break;*/
+            echo json_encode($controller->DeleteFile(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            break;
     }
 
 } catch (Exception $th) {
-    return json_encode(["success" => false, "message" => "ALGO SALIO MAL $th"]);
+    echo json_encode(["success" => false, "message" => "ALGO SALIO MAL $th"]);
 }
 
 ?>

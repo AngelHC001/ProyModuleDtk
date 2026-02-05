@@ -95,7 +95,7 @@ function FileUploadForm({onSelect, folderList = []}){
     } 
 
     return(
-        <div className="col-md-4 bg-light rounded shadow p-3">
+        <div className="col-md-5 bg-light rounded shadow p-3">
             <h1 className="slogan-2">Cargar Constancias</h1>
             <small className="mb-2">Sube archivos para la carpeta seleccionada</small>
             
@@ -117,7 +117,7 @@ function FileUploadForm({onSelect, folderList = []}){
                             ))}
                         </select>
                     }
-                    <button className="btn btn-outline-info" onClick={() => {onSelect(`${folio.year}-${folio.sigla}`)}}>
+                    <button className="btn btn-outline-info" onClick={() => {onSelect(`${folio.year}_${folio.sigla}`)}}>
                         <i className="bi bi-search me-1"></i>
                         Revisar
                     </button>

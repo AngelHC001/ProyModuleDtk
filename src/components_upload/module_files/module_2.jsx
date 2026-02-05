@@ -5,7 +5,7 @@ import FilesUploaded from "./uploaded_files";
 
 function ModuleTwo(){
     const [folders, setFolders] = useState([]);
-    const [selected, setSelected] = useState('');
+    const [selected, setSelected] = useState('2999_CCCC');
 
     const loadData = async () => {
         try {
@@ -32,7 +32,7 @@ function ModuleTwo(){
     //Form envia un nombre 
     //list lo recibe
     
-    const handleSelect = (foldername) => {
+    const handleSelect = (foldername = '') => {
         setSelected(foldername);
     }
 
