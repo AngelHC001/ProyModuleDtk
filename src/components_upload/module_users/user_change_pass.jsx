@@ -1,66 +1,55 @@
 import React, { useState } from 'react';
 
 const userOnline = localStorage.getItem('user'); //LLAVE DE SESION
+const userID = localStorage.getItem('id');
 
 const ChangeRequest = async (formData) => {
     try{
         const token = localStorage.getItem('token');
-        const response = await fetch('/api/users.php',{
+        const response = await fetch('/api/users.php',{ 
             method: 'PUT',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': token //LLAVE
+                'Authorization': token
             },
-            body: JSON.stringify({ username: formData.username, password: formData.password })
+            body: JSON.stringify({ 
+                id: userID, 
+                username: formData.username, 
+                currentPassword: formData.currentPassword,
+                newPassword: formData.newPassword
+            })
         });
 
         return await response.json();
     }catch(err){
-        console.error("Error de red:", err);
+        return await err.json();
     }   
 }
 
 
 //-----------------------FORMULARIO CAMBIOS-----------------------
-const ChangePassword = () => {
-    const [newData, setNewData] = useState({username: userOnline, password:'', confirmPass:''});
-    const [errors, setErrors] = useState({ password: '', confirmPass: '' });
+const ChangePassword = ({onPasswordChange}) => {
+    const [newData, setNewData] = useState({ username: userOnline, currentPassword: '', newPassword: '' });
+    const [message, setMessage] = useState({text:'',color:'alert-secondary'});
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setNewData((prev) => ({...prev, [name]:value }));
-        validateField(name, value);
+        setNewData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const validateField = (name,value) => {
-        let errorMsg = "";
-
-        if (name === "password") {
-            errorMsg = value.length < 6 ? "La contraseña debe ser almenos 6 caracteres." : "";        
-        }
-        if (name === "confirmPass") {
-            errorMsg = value !== newData.password ? "Las contraseñas no coinciden." : "";
-        }   
-
-        setErrors((prev) => ({...prev,[name]: errorMsg,}) );
-    }
-   
     const Clear = () => {
-        setNewData({username:userOnline, password:'', confirmPass:''});
-        setErrors({password:'',confirmPass:''})
-    } 
+        setNewData({ username: userOnline, currentPassword: '', newPassword: '' });
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if ((!errors.password && !errors.confirmPass) || (errors.password == '' && errors.confirmPass == '')) {
-            //BACKEND
-            const res = ChangeRequest(newData);  
-            res ? alert('SE CAMBIARON CREDENCIALES') : alert("CANCELADO ALGO SALIO MAL");
+        const res = await ChangeRequest(newData);
+        if(res.success){
+            setMessage({text: res.message, color: 'alert-success'});
             Clear();
-        }    
-        else {
-            alert("Los campos estan vacíos o contraseñas no coinciden");
+            onPasswordChange();
+        } else {
+            setMessage({text: res.message, color: 'alert-danger'});
         }
     }
 
@@ -72,31 +61,32 @@ const ChangePassword = () => {
                     <h5 className="mb-0">Cambiar Contraseña</h5>
                 </div>
 
+                <span className={`alert ${message.color} mb-0`}>
+                    {message.text}
+                </span>
+
                 <div className="card-body">
-                    <form className='d-flex flex-column gap-2'>
-                        {errors.password && (<small className='text-danger'>{errors.password}</small>)}
+                    <form className='d-flex flex-column gap-2' onSubmit={handleSubmit}>
                         <div className="input-group">
-                            <label htmlFor="password" className="col-form-label me-1">Contraseña: </label>
-                            <input type="password" className="form-control" name="password" placeholder="••••••••"
-                                onChange={handleChange} value={newData.password} required/>
-                        </div>
-                      
-                        {errors.confirmPass && (<small className='text-danger'>{errors.confirmPass}</small>)}
-                        <div className="input-group">
-                            <label htmlFor="confirmPass" className="col-form-label me-1">Confirmar Contraseña: </label>
-                            <input type="password" className="form-control" name="confirmPass" placeholder="••••••••"
-                                onChange={handleChange} value={newData.confirmPass} required/>
+                            <label htmlFor="currentPassword" className="col-form-label me-1">Contraseña Actual: </label>
+                            <input id="currentPassword" type="password" className="form-control" name="currentPassword" placeholder="••••••••"
+                                onChange={handleChange} value={newData.currentPassword} required />
                         </div>
 
+                        <div className="input-group">
+                            <label htmlFor="newPassword" className="col-form-label me-1">Contraseña Nueva: </label>
+                            <input id="newPassword" type="password" className="form-control" name="newPassword" placeholder="••••••••"
+                                onChange={handleChange} value={newData.newPassword} required />
+                        </div>
 
                         <div>
                             <button type="button" className="btn btn-secondary me-2" onClick={Clear}>
                                 <i className="bi bi-eraser-fill"></i>
                             </button>
 
-                            <button type="button" className="btn btn-warning text-white" onClick={(e) => handleSubmit(e)}>
+                            <button type="submit" className="btn btn-warning text-white">
                                 <i className="bi bi-pencil-square"></i>Cambiar
-                            </button>    
+                            </button>
                         </div>
                         
                     </form>         

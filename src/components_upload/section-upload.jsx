@@ -17,15 +17,17 @@ function UploadsModule(){
     });
 
     // Guardamos la sesión
-    const handleLoginSuccess = (token, username) => {
+    const handleLoginSuccess = (token, username, id) => {
         localStorage.setItem('token', token);
         localStorage.setItem('user', username);
+        localStorage.setItem('id',id);
         setEstaLogueado(true);
     };
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        localStorage.removeItem('id');
         setEstaLogueado(false);
     };
 

@@ -12,7 +12,7 @@ function ModuleThree(){
 
     const loadUsers = async() => {
         try{
-            const response = await fetch(`/api/users.php`);
+            const response = await fetch(`/api/users.php?t=${Date.now()}`);
             const data = await response.json();
             setUsers(data);
             setLoading(false);
@@ -31,9 +31,9 @@ function ModuleThree(){
         <div className="row d-flex justify-content-center text-center gap-5 p-auto mb-4">
             <div className="col-md-5">
                 <ProcessUsers key={userSelected.id} onUser={userSelected} onActionEnded={() => {loadUsers(); setUserSelected(INITIAL);} }/>
-                <ChangePassword/>
+                <ChangePassword onPasswordChanged={() => loadUsers()} />
             </div>
-            {loading ? <h6>Cargando Usuarios</h6> : <Users listUsers={users} onSelect={handleSelect}/> }
+            {loading ? <h6>Cargando Usuarios</h6> : <Users listUsers={users} onSelect={handleSelect} /> }
         </div>
     ) 
 }

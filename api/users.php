@@ -96,54 +96,55 @@ class UsuarioController {
         }
 
         return ["success" => true, "message" => "USUARIO ELIMINADO"];
-
-
-        //CREAR CONSULTA
-        /*
-        $delete = "DELETE FROM USUARIO WHERE IDUSUARIO = $id AND NOMBRE = '$user'";
-        $req = mysqli_query($mysqli,$delete);
-        if($req){
-            return ["success" => true, "message" => "USUARIO ELIMINADO"];
-        }
-        else{
-            return ["success" => false, "message" => "ALGO SALIO MAL"];
-        }*/
     }
 
 
     //UPDATE
     public function UpdateUser(){
-        require_once 'conn.php';
-        //Capturar el JSON que envía React
-        $json = file_get_contents('php://input'); //CHECAR
-        $datos = json_decode($json, true);
-
-        if (!$datos) {
-            throw new Exception("No se recibieron datos válidos");
-        }
+        // Recibir datos ( id, currentPass y newPass )
+        $input = file_get_contents('php://input'); 
+        $datos = json_decode($input, true);
+        if (!$datos) { return ["success" => false, "message" => "ALGO SALIO MAL"]; }
 
         //Extraer credenciales
-        $user = $datos['username'] ?? '';
-        $newpass = $datos['password'] ?? '';
+        $userId = $datos['id'] ?? '';
+        $userName = $datos['username'] ?? '';
+        $currentPass =  $datos['currentPassword'] ?? '';
+        $newPass = $datos['newPassword'] ?? '';
 
-        //*HASHEAR
-        $hashPass = password_hash($newpass,PASSWORD_DEFAULT);
+        //EXTRAER JSON
+        $jsonPath = '../doc-point/users.json'; 
+        $jsonContent = file_get_contents($jsonPath);
+        $users = json_decode($jsonContent, true); 
 
-        //CREAR CONSULTA
-        $update = "UPDATE USUARIO SET CLAVE = '$hashPass' WHERE NOMBRE = '$user'";
+        $success = false;
+        $message = "Usuario no encontrado";
         
-        $req = mysqli_query($mysqli,$update);
-        if($req){
-            return ["success" => true, "message" => "CLAVE CAMBIADA"];
+        //PROCESO MODIFICAR ARRAY
+        foreach ($users as &$user) { 
+            if ($user['id'] == $userId) {
+                // Verificar contraseña actual antes de cambiar
+                if (password_verify($currentPass, $user['pass'])) {
+                    $user['pass'] = password_hash($newPass, PASSWORD_DEFAULT);
+                    $success = true;
+                    $message = "Contraseña actualizada correctamente";
+                    break;
+                } else {
+                    $message = "La contraseña actual es incorrecta";
+                    return ["success" => false, "message" => $message];
+                }
+            }
         }
-        else{
-            return ["success" => false, "message" => "ALGO SALIO MAL"];
+
+        if ($success) {  
+            file_put_contents($jsonPath, json_encode($users, JSON_PRETTY_PRINT));
         }
+
+        return ["success" => $success, "message" => $message];
     }
-
 }
-
-
+ 
+    
 
 try {
     //INICIAR LOGICA
@@ -171,11 +172,3 @@ try {
 }
 
 ?>
-
-
-
-
-
-
-
-

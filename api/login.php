@@ -43,7 +43,10 @@ try {
     }
 
     if(password_verify($passInput, $userFound['pass'])){ //PASSWORD VERIFY
-        $response = ["success" => true, "token" => "SECRET_KEY_WORD", "username" => $userFound['name']];
+        $response = ["success" => true, 
+                        "token" => "SECRET_KEY_WORD", 
+                        "username" => $userFound['name'], 
+                        "id" => $userFound['id']];
     }
     else {
         $response = ["success" => false, "message" => "CREDENCIALES INCORRECTAS"];

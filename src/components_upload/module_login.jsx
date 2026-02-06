@@ -26,11 +26,10 @@ const Login = ({ onLoginSuccess }) => {
       });  
       
       const data = await response.json();
-      //console.log("texto ",data);
       
       // Guardar el token en el almacenamiento local del navegador
       if (data.success) {
-        onLoginSuccess(data.token,data.username);   // Redirigir al dashboard
+        onLoginSuccess(data.token,data.username,data.id);   // Redirigir al dashboard
       }else {
         setError(data.message || 'Credenciales incorrectas');
       }
