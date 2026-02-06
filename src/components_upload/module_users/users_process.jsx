@@ -57,18 +57,16 @@ const DeleteUser = async (userData) => {
 
 //-----------------------FORMULARIO REGISTROS-----------------------
 const ProcessUsers = ({onUser, onActionEnded}) => {
-  const [formData, setFormData] = useState({id:'',username: ''});
+  const [formData, setFormData] = useState({ id: 0, username:'' });
+  const [message, setMessage] = useState({text: '', color: 'alert-secondary'})
 
-  useEffect(() => {
-    return () => {
-        onUser ? setFormData(onUser) : 
-            setFormData({ id: '', username:''});
-    }
+  useEffect(() => { 
+    return () => {onUser ? setFormData(onUser): setFormData({ id: 0, username:'' }); }
   },[onUser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData,[name]: value });
   };
 
   const handleSubmit = async (e, tipoAccion) => {
@@ -77,34 +75,55 @@ const ProcessUsers = ({onUser, onActionEnded}) => {
     //CONEXION DEL API
     if(tipoAccion === 'Alta'){
         const response = await AddUser(formData);
-        if (response) { onActionEnded(); } //VUELVE A CARGAR USUARIOS y RESTABLECE EL VALOR DEL PADRE
+        //VUELVE A CARGAR USUARIOS
+        if (response.success) { 
+            onActionEnded(); 
+            setMessage({text:response.message, color: 'alert-success'});
+            setFormData({id:0,username:''});
+        }
+        else{
+            setMessage({text:response.message, color: 'alert-danger'});
+        } 
     }
-    else if(tipoAccion === 'Cancelar'){
-        setFormData({id:'',username: '' }); //LIMPIA FORMULARIO
-    }
-    else{
+    else if(tipoAccion === 'Baja')
+    {
         const deletion = await DeleteUser(formData);
-        if (deletion) { onActionEnded(); }
+        if (deletion.success) { 
+            onActionEnded(); 
+            setMessage({text:deletion.message, color: 'alert-success'});
+            setFormData({id:0,username:''});
+        }
+        else{
+            setMessage({text:deletion.message, color: 'alert-danger'});
+        } 
     }
-    
-    setFormData({id:'', username: '' }); //LIMPIA FORMULARIO
+    else
+    {
+        setMessage({text: '', color: 'alert-secondary'})
+        setFormData({ id:0, username:''})
+    }
   };
+
   return (
     <div className="row mb-3">
         <div className="card border-0">
             <FormHeader/>
             <div className="card-body">
+                <div className={`alert ${message.color} mb-1`}>
+                    {message.text}
+                </div>
+
                 <form className='d-flex flex-column gap-2'>
                     {/* Campo Usuario */}
                     <div className="input-group">
                         <label htmlFor="username" className="col-form-label me-2">Nombre de Usuario: </label>
-                        <input type="text" className="form-control" name="username" placeholder="Ej: jdoe2026" 
+                        <input type="text" className="form-control" name="username"
                             onChange={handleChange} value={formData.username} required/>
                     </div>
 
                     {/* Grupo de Botones */}
                     <div className="d-flex flex-wrap gap-2 justify-content-center">
-                        <button type="button" className="btn btn-secondary" onClick={(e) => handleSubmit(e, 'Cancelar')}>
+                        <button type="button" className="btn btn-secondary" onClick={(e) => handleSubmit(e,'Cancelar')}>
                             <i className="bi bi-eraser-fill"></i>
                         </button>
  

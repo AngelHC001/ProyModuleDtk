@@ -57,16 +57,16 @@ function WriteJson(int $mode, string $folderName, $fileData){
 
 
 
-
-
 class FilesController {
-    //SUBIR ARCHIVO
-    //Formulario procesa Carpeta, Archivo y Folio de referencia 
-    //El directorio fijo ../doc-point/certificados/ [CARPETA] 
     public function UploadFile(){
+        //DATOS DE FORMULARIO
         $sigla = $_POST['sigla'] ?? 'N/A';
         $year = $_POST['year'] ?? 'N/A';
         $num = $_POST['num'] ?? '00';
+
+        //DIRECTORIO FIJO
+        $folder = $year . "_" . $sigla;
+        $endpoint = "../doc-point/certificados/$folder";
 
         //OBTENER ARCHIVO
         if(isset($_FILES['docfile'])){
@@ -78,11 +78,8 @@ class FilesController {
             return ["success" => false, "message" => "NO HAY ARCHIVOS CARGADOS"];
         }
         
-        //DIRECTORIO FIJO
-        $folder = $year . "_" . $sigla;
-        $endpoint = "../doc-point/certificados/$folder";
         
-        //SI NO EXISTE CANCELAR
+        //EXISTE CARPETA
         if(!is_dir($endpoint)){
             return ["success" => false, "message" => "LA CARPETA NO EXISTE"];
         }
@@ -147,7 +144,7 @@ try {
             break;
         
         case 'DELETE':
-            echo json_encode($controller->DeleteFile(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            echo json_encode($controller->DeleteFile());
             break;
     }
 

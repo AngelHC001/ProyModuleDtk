@@ -34,7 +34,7 @@ const ModuleOne = () => {
 
   return (
     <div className="row d-flex justify-content-center text-center gap-4 p-auto mb-4">
-      <CoursesForm actualCourse={selected} onActionEnded={() => {loadCourses(); setSelected(INITIAL_ST); }}/>  
+      <CoursesForm key={selected.key} actualCourse={selected} onActionEnded={() => {loadCourses(); setSelected(INITIAL_ST); }}/>  
       {loading ? <h6>Cargando Registros</h6> : <CoursesList listDir={courses} onSelect={handleSelect}/>    }
     </div>
   );

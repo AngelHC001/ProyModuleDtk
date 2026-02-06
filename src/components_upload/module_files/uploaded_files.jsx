@@ -78,15 +78,13 @@ function FilesUploaded({folderName, refreshSignal}){
               
                 <div className="d-flex justify-content-center gap-2 mb-2">
                     <button className="btn btn-outline-secondary" onClick={() => setSelected(null)}>
-                        <i className="bi bi-eraser-fill"></i>
-                    </button>
-
-                    <button className="btn btn-outline-success">
-                        <i className="bi bi-download"></i>
+                        <i className="bi bi-eraser-fill me-1"></i>
+                        Cancelar
                     </button>
 
                     <button className="btn btn-outline-danger" onClick={(e) => handleDelete(e,selected)}>
-                        <i className="bi bi-trash-fill"></i>
+                        <i className="bi bi-trash-fill me-1"></i>
+                        Borrar
                     </button>
                 </div>
 

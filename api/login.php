@@ -6,39 +6,53 @@ try {
     header("Access-Control-Allow-Headers: Content-Type");
     header("Content-Type: application/json");
    
-    require_once 'conn.php';
+    //require_once 'conn.php';
     
     //Capturar el JSON que envía React
     $json = file_get_contents('php://input'); //CHECAR
     $datos = json_decode($json, true);
 
     if (!$datos) {
-        throw new Exception("No se recibieron datos válidos");
+        $response = ["success" => false, "message" => "SE RECIBIERON DATOS INVALIDOS"];
     }
 
     //Extraer credenciales
-    $user = $datos['username'] ?? '';
-    $pass = $datos['password'] ?? '';
-   
-    //Los campos son required, llegaran llenos si o si
-    $query = "SELECT NOMBRE, CLAVE FROM USUARIO WHERE NOMBRE = '$user'";
-    $req = mysqli_query($mysqli,$query);
+    $userInput = $datos['username'] ?? '';
+    $passInput = $datos['password'] ?? '';
+
+    //Capturar el JSON que envía React
+    $jsonDir = file_get_contents('../doc-point/users.json'); //CHECAR
+    $users = json_decode($jsonDir, true);
     $response = [];
 
-    if ($req && $req->num_rows > 0) {
-        while($row = mysqli_fetch_assoc($req)){
-            if(password_verify($pass, $row['CLAVE'])){ //PASSWORD VERIFY
-                $response = ["success" => true, "token" => "SECRET_KEY_WORD", "username" => $row['NOMBRE']];
-            }
-            else {
-                $response = ["success" => false, "message" => "ERROR FETCH"];
-            }
+    if (!$users) {
+        $response = ["success" => false, "message" => "ALGO SALIO MAL"];
+    }
+
+    //BUSCAR USUARIO
+    $userFound = null;
+    foreach ($users as $user) {
+        if ($user['name'] === $userInput) {
+            $userFound = $user;
+            break;
         }
-    }//if
+    }
+
+    if (!$userFound) {
+        $response = ["success" => false, "message" => "CREDENCIALES INCORRECTAS (Usuario)"];
+    }
+
+    if(password_verify($passInput, $userFound['pass'])){ //PASSWORD VERIFY
+        $response = ["success" => true, "token" => "SECRET_KEY_WORD", "username" => $userFound['name']];
+    }
+    else {
+        $response = ["success" => false, "message" => "CREDENCIALES INCORRECTAS"];
+    }
+
     echo json_encode($response); 
 
 } catch (Exception $e) {
-    echo json_encode(["message"=>$e]);
+    echo json_encode(["success" => false, "message" => $e]);
 }
 
 ?>
