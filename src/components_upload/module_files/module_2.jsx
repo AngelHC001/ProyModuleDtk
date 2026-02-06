@@ -6,6 +6,7 @@ import FilesUploaded from "./uploaded_files";
 function ModuleTwo(){
     const [folders, setFolders] = useState([]);
     const [selected, setSelected] = useState('2999_CCCC');
+    const [refreshSignal, setRefreshSignal] = useState(0);
 
     const loadData = async () => {
         try {
@@ -18,35 +19,20 @@ function ModuleTwo(){
         }
     }
 
-
-    //const loadFiles = async () =>{
-      //  const req = await fetch('/api/file_process.php',)
-        //const data = await req.json();
-        //setFiles(data);
-    //}
-
-    //selectedfolder
-    //conforme seleccione el folder
-    //se despliegan el contenido
-    //files uploaded recibe solo el nombre
-    //Form envia un nombre 
-    //list lo recibe
-    
-    const handleSelect = (foldername = '') => {
-        setSelected(foldername);
-    }
+    //Llamar  Componente 1 tras upload exitoso
+    const triggerRefresh = () => setRefreshSignal(prev => prev + 1);
+    const handleSelect = (foldername = '') => { setSelected(foldername); }
 
     useEffect(() =>{
         return () => { loadData(); }
     },[]);
 
-
     return(
         <div className="row d-flex justify-content-center gap-4 mb-4 text-center">
-            <FileUploadForm onSelect={handleSelect} folderList={folders}/>
+            <FileUploadForm onSelect={handleSelect} folderList={folders} onUploadSuccess={triggerRefresh}/>
 
-            {/*SELECTED FOLDER FOR SCAN? */}
-            <FilesUploaded folderName={selected}/>
+            {/* MANDA NOMBRE DE FOLDER PARA SCANEAR */}
+            <FilesUploaded folderName={selected} refreshSignal={refreshSignal} />
         </div>
     )
 }

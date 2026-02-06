@@ -21,7 +21,7 @@ const eraseFile = async(pathString)=>{
 }
 
 
-function FilesUploaded({folderName}){
+function FilesUploaded({folderName, refreshSignal}){
     const [load,setLoad] = useState(true);
     const [files,setFiles] = useState([]);
     const [selected, setSelected] = useState(null);
@@ -65,7 +65,7 @@ function FilesUploaded({folderName}){
         }
         fetchFiles();
         return () => controller.abort();
-    },[folderName]);
+    },[folderName,refreshSignal]);
     
     if(folderName !== '2999_CCCC'){
         return(
@@ -76,7 +76,6 @@ function FilesUploaded({folderName}){
                     <small>{selected}</small>  
                 </div>
               
-
                 <div className="d-flex justify-content-center gap-2 mb-2">
                     <button className="btn btn-outline-secondary" onClick={() => setSelected(null)}>
                         <i className="bi bi-eraser-fill"></i>
@@ -101,7 +100,7 @@ function FilesUploaded({folderName}){
                                         item.id === "0000" ? '' :
                                         <li className="file-item list-group-item" key={item.id}>
                                             <button className="btn" onClick={() => setSelected(item.ruta)}>
-                                                {item.ruta}
+                                                No. {item.id} - {item.ruta}
                                             </button>
                                         </li>
                             ))}

@@ -6,27 +6,26 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
 
-//VISUALIZATION
+//EXTRAE EL JSON INDICE DE LA CARPETA
 function GetFiles(){
-    //Capturar el JSON que envía React
     $input = file_get_contents('php://input'); 
-    $datos = json_decode($input, true); //Nombre folder YEAR-SIGLA
+    $datos = json_decode($input, true); 
 
     if (!$datos) {
-        throw new Exception("No se recibieron datos válidos");
+        return ["success" => false, "message" => "No se recibieron datos válidos"];
     }
 
-    //EXTRAER JSON CON LOS REGISTROS
+    //nombreFolder YEAR-SIGLA
     $nombreFolder = $datos['folder'] ?? '';
-    $endpoint = trim("../doc-point/$nombreFolder.json");
-    $registros = file_get_contents($endpoint);
-
-    if (!$registros) {
-        return ["success" => false, "message" => "ERROR, EL ARCHIVO DE ESCRITURA NO EXISTE"];
+    $endpoint = "../doc-point/directorios";
+    $jsonFolder = $endpoint."/".$nombreFolder.".json";
+    
+    if(!file_exists($jsonFolder)){
+        return ["success" => false, "message" => "ERROR, EL ARCHIVO DE ESCRITURA NO EXISTE"]; 
     }
-
-    //RETORNA EL JSON ENCODED
-    return json_decode($registros,true);
+    
+    $registros = file_get_contents($jsonFolder);
+    return json_decode($registros,true);   //RETORNA EL JSON ENCODED
 }
 
 
@@ -35,9 +34,8 @@ try
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
         echo json_encode(GetFiles(),JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
-
 } catch (Exception $th) {
-    return json_encode(["success" => false, "message" => "ALGO SALIO MAL $th"]);
+    echo json_encode(["success" => false, "message" => "ALGO SALIO MAL $th"]);
 }
 
 ?>

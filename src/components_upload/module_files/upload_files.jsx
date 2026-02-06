@@ -15,7 +15,7 @@ const DataProcess = async(formData) => {
 }
 
 
-function FileUploadForm({onSelect, folderList = []}){
+function FileUploadForm({onSelect, folderList = [], onUploadSuccess}){
     const thisYear = new Date().getFullYear().toString();
     const [loading,setLoading] = useState(true);
     const [message, setMessage] = useState({text:'',alertColor:'alert-secondary'});
@@ -62,6 +62,7 @@ function FileUploadForm({onSelect, folderList = []}){
         const response = await DataProcess(formData);
         if (response.success) {
             Clear(e);
+            onUploadSuccess();
             setMessage({text: response.message, alertColor:'alert-success'});
         }
         else{
