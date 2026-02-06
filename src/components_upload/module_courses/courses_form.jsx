@@ -1,5 +1,5 @@
 import React, {useEffect, useState}from "react";
-//const a = 'https://datametrika.com/module_upload/';
+
 
 //  Función para Crear
 const agregarCurso = async (nuevoCurso) => {
@@ -60,7 +60,7 @@ const CoursesForm = ({ actualCourse, onActionEnded }) => {
   const handleSubmit = async (e) => {
       e.preventDefault();    
       const response = await agregarCurso(formData);
-      if (response) {
+      if (response.success) {
         onActionEnded();
         Clear();
         setMessage({text:response.message, alert_mode:'alert-success'});
@@ -89,7 +89,7 @@ const CoursesForm = ({ actualCourse, onActionEnded }) => {
     }
   }
 
-  const Clear = () => {
+  const Clear = () => {   
     setFormData({ id: '', sigla: '', name: '', year: '' });
   }
 

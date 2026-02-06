@@ -1,23 +1,6 @@
 import React, {useState, useEffect } from "react"
 
 
-// ProgressBar.jsx
-const ProgressBar = ({ progress }) => {
-  return (
-    <div style={{ width: '100%', backgroundColor: '#e0e0e0', borderRadius: '8px', marginTop: '10px' }}>
-      <div style={{
-        width: `${progress}%`,
-        height: '10px',
-        backgroundColor: '#4caf50',
-        borderRadius: '8px',
-        transition: 'width 0.3s ease-in-out'
-      }} />
-      <p style={{ textAlign: 'center', fontSize: '12px' }}>{progress}% completado</p>
-    </div>
-  );
-};
-
-
 const DataProcess = async(formData) => {
     try {
         const response = await fetch('/api/file_process.php',{
@@ -32,9 +15,8 @@ const DataProcess = async(formData) => {
 }
 
 
-
 function FileUploadForm({onSelect, folderList = []}){
-    const thisYear = new Date().getFullYear();
+    const thisYear = new Date().getFullYear().toString();
     const [loading,setLoading] = useState(true);
     const [message, setMessage] = useState({text:'',alertColor:'alert-secondary'});
     //Form States
@@ -111,8 +93,8 @@ function FileUploadForm({onSelect, folderList = []}){
                         <select className="form-select" onChange={handleChange}>
                             {
                                 folderList.map((folder) => (
-                                    <option key={folder[0]} value={`${folder[1]}-${folder[2]}`}> 
-                                        {folder[2]}-{folder[1]}
+                                    <option key={folder.key} value={`${folder.sigla}-${folder.year}`}> 
+                                        {folder.year}-{folder.sigla}
                                     </option>
                             ))}
                         </select>

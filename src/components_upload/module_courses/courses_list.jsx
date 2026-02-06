@@ -18,11 +18,11 @@ function CoursesList({listDir = [], onSelect}){
                     <tbody>
                         {
                             listDir.map((course) => (
-                                course[1] === 'CCCC' ? '':
-                                <tr className="row-table" key={course[0]} onClick={() => onSelect(course)}> 
-                                    <td>{course[2]}-{course[1]}</td>
-                                    <td>{course[3]}</td>
-                                    <td>{course[4]}</td>
+                                course.sigla === 'CCCC' ? '':
+                                <tr className="row-table" key={course.key} onClick={() => onSelect(course)}> 
+                                    <td>{course.year}-{course.sigla}</td>
+                                    <td>{course.name}</td>
+                                    <td>{course.id}</td>
                                 </tr>
                             ))
                         }

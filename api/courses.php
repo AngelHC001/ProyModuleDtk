@@ -5,61 +5,125 @@ header("Access-Control-Allow-Methods:  GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
+//ESCRIBIR DIRECTORIO GENERAL JSON PARA QUE LO LEA LA PAGINA PRINCIPAL
+function WriteJson($mode, $folderData){
+    $json_main = "../doc-point/directory.json";
+    if(!file_exists($json_main)){ return false; }
+    
+    //Extraer JSON
+    $json = file_get_contents($json_main); 
+    $data = json_decode($json, true);
+    if(!$data){ return false; }
+
+    //MODE = 1 PUSH
+    if($mode === 1 && count($folderData) === 5){
+        $newItem = [
+            "key" => $folderData[0],
+            "id" => $folderData[1],
+            "sigla" => $folderData[2],
+            "name" => $folderData[3],
+            "year" => $folderData[4],
+        ];
+
+        //AGREGAR NUEVOS DATOS
+        array_push($data,$newItem);        
+        $newData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+       
+        // MODIFICAR Directory.json;
+        if (file_put_contents($json_main, $newData)) {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+    else ////MODE = 0 POP
+    {
+        if(count($folderData) !== 1) { return false; }
+        
+        //BORRAR POR ID
+        $attrTarget = $folderData[0];  
+        
+        if(is_array($data)){
+            $newData = array_filter($data,function ($item) use($attrTarget){
+                return $item['id'] !== $attrTarget;
+            });
+        }
+
+        //GUARDAR CAMBIOS
+        array_values($newData);
+        $newData = json_encode($newData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        if (file_put_contents($json_main, $newData)) {
+            return true;
+        }
+        else{
+            return false;
+        }
+    }//if 0
+}
+
+
 
 //CREA CARPETA PARA ARCHIVOS Y JSON PARA LECTURA DE QR
 function CreateFolder(string $carpetaCurso){
     $endpoint = "../doc-point/certificados";
+    $jsonpoint = "../doc-point/directorios";
+
+    //Crear carpeta y directorio archivos
+    $folderDir = $endpoint."/".$carpetaCurso;
+    $jsonDir = $jsonpoint."/".$carpetaCurso.".json";
     $permisos = 0755;    
 
     try{
-        //El directorio no existe? Interrumpir accion
-        if (!is_dir($endpoint)) {
-            return false; 
+        //El Directorio existe?
+        if (!is_dir($endpoint)) { return false; }
+
+        //PREPARAR VALORES
+        $default = [["id" => "0000",  "ruta" => "curso/archivo.pdf"]];
+        $json_data = json_encode($default, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        //PROCESAR CARPETA VACIA EN CERTIFICADOS/
+        if (!mkdir($folderDir, $permisos, true) && $json_data) {
+            return ["success" => false, "message" => "No se pudo escribir el archivo $jsonDir"];   
         }
 
-        //EL DIRECTORIO EXISTE SIEMPRE
-        $directorio = "$endpoint/$carpetaCurso";
-        $json_empty = [["id" => "0000",  "archivo" => "curso-num.pdf"]]; //valor default
-        $json_data = json_encode($json_empty,JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
-        //CREAR CARPETA (MKDIR) Y JSON (FILEPUT)
-        if (mkdir($directorio, $permisos, true) && $json_data) {
-            $fileName = "../doc-point/$carpetaCurso.json";  // Nombre del archivo json a crear
-            if (file_put_contents($fileName, $json_data) === false) {
-                throw new Exception("No se pudo escribir el archivo $fileName");
-            }
-            return true;
-        } else {
-            return false;
+        //PROCESAR JSON EN DIRECTORIOS/
+        if (!file_put_contents($jsonDir, $json_data)) {
+            return ["success" => false, "message" => "No se pudo escribir el archivo $jsonDir"];  
         }
-       
+
+        return true;
     }catch(Exception $ex){
-        echo json_encode(["sucess" => false, "message" => "FALLO EN CREAR CARPETA $ex"]);
+        return ["sucess" => false, "message" => "FALLO EN CREAR CARPETA $ex"];
     }
 }
 
 
 function EraseFolder(string $carpetaCurso) {
     $endpoint = "../doc-point/certificados";
-    $jsonTarget = "../doc-point/$carpetaCurso.json";
-    
-    if(!is_dir($endpoint)){
-        return false;
-    }
+    $jsonpoint = "../doc-point/directorios";
+    if(!is_dir($endpoint)){ return false; }
 
-    //Borrar JSON
+    //Preparar rutas
+    $folderTarget = $endpoint . "/" . $carpetaCurso;
+    $jsonTarget = $jsonpoint . "/" . $carpetaCurso . ".json";
+
+    //Processar Borrar JSON
     if(file_exists($jsonTarget)){
         try {
             unlink($jsonTarget);
         } catch (Exception $e) {
-            echo json_encode(["success" => false, "message" => "ERROR AL BORRAR $e"]);
+            return ["success" => false, "message" => "ERROR AL BORRAR $e"];
         }
     }
 
-    $dir = "$endpoint/$carpetaCurso";
-    return rmdir($dir); //Borrar carpeta
-      
+    //Procesar Borrar carpeta VACIA
+    if(is_dir($folderTarget)){
+        return rmdir($folderTarget); //bool termina proceso
+    }
+
     /*    
+        si no es vacia
         echo json_encode(["ms" => $dir]);
         $directory = new RecursiveDirectoryIterator($dir,RecursiveDirectoryIterator::CURRENT_AS_PATHNAME);
         $iterator = new RecursiveIteratorIterator($directory,RecursiveIteratorIterator::SELF_FIRST);
@@ -76,27 +140,23 @@ function EraseFolder(string $carpetaCurso) {
 
 
 class CoursesController {
-    //SELECT VISUALIZATION
+    //VER DIRECTORIO JSON    
     public function GetCourses(){
-        require_once 'conn.php'; //Habilitar conexion
-        $select = "SELECT CLAVE, SIGLA, ANIO, NOMBRE, IDQR FROM CURSO ORDER BY ANIO DESC";
-        $req = mysqli_query($mysqli,$select);
-        $response = [];
-        if($req){
-            $response = mysqli_fetch_all($req);
+        $json = file_get_contents('../doc-point/directory.json');
+        $datos = json_decode($json, true);
+        if (!$datos) { 
+            return ["success" => false , "message" => "No existe el directorio general"]; 
         }
-        return $response;
+        return $datos;
     }
 
     //INSERT
     public function InsertCourse(){
-        require_once 'conn.php';
         //Capturar el JSON que envía React
-        $json = file_get_contents('php://input'); //CHECAR
+        $json = file_get_contents('php://input');
         $datos = json_decode($json, true);
-
-        if (!$datos) {
-            throw new Exception("No se recibieron datos válidos");
+        if (!$datos) { 
+            return ["success" => false , "message" => "No se recibieron datos válidos"]; 
         }
 
         //Extraer credenciales (STATE DE REACT)
@@ -107,32 +167,27 @@ class CoursesController {
         $key = random_int(100,1000);
         
         $nombreCarpeta = $year . "_" . $sigla;
-        //SI CREA LA CARPETA REGISTRA EL SQL
-        if(CreateFolder($nombreCarpeta)){
-            $insert = "INSERT INTO CURSO VALUES ($id,'$sigla','$nombre',$key,$year)";
-            $req = mysqli_query($mysqli,$insert);
-            if($req){
-                return ["success" => true, "message" => "CARPETA CREADA"];
-            }
-            else{
-                return ["success" => false, "message" => "ERROR AL REGISTRAR EL CURSO"];
-            }
+        //PROCESO CREAR CARPETA
+        if(!CreateFolder($nombreCarpeta)){
+            return ["success" => false, "message" => "ERROR AL CREAR CARPETA"];
         }
-        else
-        {
-            return ["success" => false, "message" => "EL DOC POINT NO EXISTE"];
+
+        //PROCESO ESCRIBIR JSON
+        if(!WriteJson(1,[$key,$id,$sigla,$nombre,$year])){
+            return ["success" => false, "message" => "ERROR AL REGISTRAR EL CURSO"];
         }
+
+        return ["success" => true, "message" => "CARPETA  $nombreCarpeta CREADA"];
     }
 
     //DELETE
-    public function DeleteCourse(){
-        require_once 'conn.php';
+    public function DeleteCourse(){ 
         //Capturar el JSON que envía React
-        $json = file_get_contents('php://input'); //CHECAR
+        $json = file_get_contents('php://input'); 
         $datos = json_decode($json, true);
 
         if (!$datos) {
-            throw new Exception("No se recibieron datos válidos");
+            return ["success" => false, "message" => "No se recibieron datos válidos"];
         }
 
         //Extraer credenciales
@@ -141,21 +196,17 @@ class CoursesController {
         $year = $datos['year'] ?? '';
 
         $folderTarget = $year . "_" . $sig;
-        if(EraseFolder($folderTarget)){
-            //BORRAR REGISTRO
-            $delete = "DELETE FROM CURSO WHERE IDQR = $id AND SIGLA = '$sig' AND ANIO = $year";
-            $req = mysqli_query($mysqli,$delete);
-            if($req){
-                return ["success" => true, "message" => "CARPETA ELIMINADA"];
-            }
-            else{
-                return ["success" => false, "message" => "ERROR AL ELIMINAR"];
-            }
+        //PROCESSO BORRAR FOLDER
+        if(!EraseFolder($folderTarget)){
+            return ["success" => false, "message" => "LA CARPETA NO EXISTE"];
         }
-        else
-        {
-            return ["success" => false, "message" => "LA CARPETA NO EXISTEN"];
+
+        //PROCESO BORRAR ITEM DEL JSON
+        if(!WriteJson(0,[$id])){
+            return ["success" => false, "message" => "EL ARCHIVO DE ESCRITURA NO EXISTE"];
         }
+
+        return ["success" => true, "message" => "DIRECTORIO ELIMINADO"];
     }
 }
 
@@ -178,7 +229,7 @@ try {
     }
 
 } catch (Exception $th) {
-    echo json_encode(["message"=> "ALGO SALIO MAL $th"]);
+    echo json_encode(["success" => false, "message"=> "ALGO SALIO MAL $th"]);
 }
 
 ?>
