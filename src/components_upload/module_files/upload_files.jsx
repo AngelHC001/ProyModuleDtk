@@ -1,9 +1,9 @@
 import React, {useState, useEffect } from "react"
 
-
+const url = import.meta.env.VITE_API_URL;
 const DataProcess = async(formData) => {
     try {
-        const response = await fetch('/api/file_process.php',{
+        const response = await fetch(`${url}/file_process.php`,{
             method:'POST',
             body: formData
         });
@@ -100,9 +100,9 @@ function FileUploadForm({onSelect, folderList = [], onUploadSuccess}){
                             ))}
                         </select>
                     }
-                    <button className="btn btn-outline-info" onClick={() => {onSelect(`${folio.year}_${folio.sigla}`)}}>
-                        <i className="bi bi-search me-1"></i>
-                        Revisar
+                    <button className="btn btn-outline-dark" onClick={() => {onSelect(`${folio.year}_${folio.sigla}`)}}>
+                        <i className="bi bi-folder-fill me-1"></i>
+                        Abrir
                     </button>
                 </div>
 

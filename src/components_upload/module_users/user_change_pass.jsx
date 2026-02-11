@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 
 const userOnline = localStorage.getItem('user'); //LLAVE DE SESION
 const userID = localStorage.getItem('id');
+const url = import.meta.env.VITE_API_URL;
 
 const ChangeRequest = async (formData) => {
     try{
         const token = localStorage.getItem('token');
-        const response = await fetch('/api/users.php',{ 
+        const response = await fetch(`${url}/users.php`,{ 
             method: 'PUT',
             headers: { 
                 'Content-Type': 'application/json',

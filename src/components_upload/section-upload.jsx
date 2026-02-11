@@ -24,11 +24,13 @@ function UploadsModule(){
         setEstaLogueado(true);
     };
 
+    //logout
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         localStorage.removeItem('id');
         setEstaLogueado(false);
+        window.location.reload();
     };
 
     // Configuración de las pestañas para facilitar el mantenimiento

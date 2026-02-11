@@ -19,7 +19,7 @@ function WriteJson($mode, $folderData){
     if($mode === 1 && count($folderData) === 5){
         $newItem = [
             "key" => $folderData[0],
-            "id" => $folderData[1],
+            "id" => intval($folderData[1]),
             "sigla" => $folderData[2],
             "name" => $folderData[3],
             "year" => $folderData[4],
@@ -98,6 +98,19 @@ function CreateFolder(string $carpetaCurso){
     }
 }
 
+function rmdir_recursive($dir) {
+    if (!is_dir($dir)) return false;
+    
+    $files = array_diff(scandir($dir), array('.', '..'));  // Escanear contenido
+    
+    // Si es un directorio, llama a recursion
+    // Si es un archivo, unlink
+    foreach ($files as $file) {
+        (is_dir("$dir/$file")) ? rmdir_recursive("$dir/$file") : unlink("$dir/$file");
+    }
+    return rmdir($dir); // Una vez vacío, borramos el directorio raíz
+}
+
 
 function EraseFolder(string $carpetaCurso) {
     $endpoint = "../doc-point/certificados";
@@ -108,7 +121,7 @@ function EraseFolder(string $carpetaCurso) {
     $folderTarget = $endpoint . "/" . $carpetaCurso;
     $jsonTarget = $jsonpoint . "/" . $carpetaCurso . ".json";
 
-    //Processar Borrar JSON
+    //Proceso Borrar JSON
     if(file_exists($jsonTarget)){
         try {
             unlink($jsonTarget);
@@ -117,26 +130,19 @@ function EraseFolder(string $carpetaCurso) {
         }
     }
 
-    //Procesar Borrar carpeta VACIA
     if(is_dir($folderTarget)){
-        return rmdir($folderTarget); //bool termina proceso
-    }
-
-    /*    
-        si no es vacia
-        echo json_encode(["ms" => $dir]);
-        $directory = new RecursiveDirectoryIterator($dir,RecursiveDirectoryIterator::CURRENT_AS_PATHNAME);
-        $iterator = new RecursiveIteratorIterator($directory,RecursiveIteratorIterator::SELF_FIRST);
-        //erase folfer files
-        foreach($iterator as $file) {
-            if ($file->is_dir()){
-                rmdir($file->get_include_path());
+        try {
+            if (rmdir_recursive($folderTarget)) {
+                return true;
             } else {
-                unlink($file->get_include_path());
+                return false;
             }
+        } catch (Exception $e) {
+            return ["success" => false, "message" => "ERROR AL BORRAR CONTENIDO: " . $e->getMessage()];
         }
-    */
+    }
 }
+
 
 
 class CoursesController {
@@ -147,6 +153,7 @@ class CoursesController {
         if (!$datos) { 
             return ["success" => false , "message" => "No existe el directorio general"]; 
         }
+       
         return $datos;
     }
 
@@ -164,8 +171,12 @@ class CoursesController {
         $nombre = $datos['name'] ?? ''; 
         $sigla = $datos['sigla'] ?? '';
         $year = $datos['year'] ?? '';
-        $key = random_int(100,1000);
+        $key = bin2hex(random_bytes(8));  // Genera una cadena de 16 caracteres alfanuméricos únicos
         
+        if (empty($id) || empty($nombre) || empty($sigla) || empty($year)) {
+            return ["success" => false, "message" => "Faltan campos obligatorios para procesar el curso"];
+        }
+
         $nombreCarpeta = $year . "_" . $sigla;
         //PROCESO CREAR CARPETA
         if(!CreateFolder($nombreCarpeta)){
@@ -185,7 +196,6 @@ class CoursesController {
         //Capturar el JSON que envía React
         $json = file_get_contents('php://input'); 
         $datos = json_decode($json, true);
-
         if (!$datos) {
             return ["success" => false, "message" => "No se recibieron datos válidos"];
         }
@@ -196,14 +206,15 @@ class CoursesController {
         $year = $datos['year'] ?? '';
 
         $folderTarget = $year . "_" . $sig;
+       
         //PROCESSO BORRAR FOLDER
         if(!EraseFolder($folderTarget)){
-            return ["success" => false, "message" => "LA CARPETA NO EXISTE"];
+            return ["success" => false, "message" => "No se pudo eliminar la carpeta"];    
         }
-
+         
         //PROCESO BORRAR ITEM DEL JSON
         if(!WriteJson(0,[$id])){
-            return ["success" => false, "message" => "EL ARCHIVO DE ESCRITURA NO EXISTE"];
+            return ["success" => false, "message" => "El archivo de escritura no existe"];
         }
 
         return ["success" => true, "message" => "DIRECTORIO ELIMINADO"];

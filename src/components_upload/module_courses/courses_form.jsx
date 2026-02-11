@@ -1,12 +1,13 @@
 import React, {useEffect, useState}from "react";
 
+const url = import.meta.env.VITE_API_URL;
 
 //  Función para Crear
 const agregarCurso = async (nuevoCurso) => {
   try
   {
     const token = localStorage.getItem('token'); // Recuperamos la llave del bolsillo
-    const response = await fetch('/api/courses.php', {
+    const response = await fetch(`${url}/courses.php`, {
       method: 'POST',
       headers: { 
         'Accept': 'application/json',
@@ -28,18 +29,18 @@ const agregarCurso = async (nuevoCurso) => {
 const eliminarCurso = async (cursoTarget) => {
   try {
     const token = localStorage.getItem('token'); 
-    const response = await fetch('/api/courses.php', { 
+    const response = await fetch(`${url}/courses.php`, { 
       method: 'DELETE', headers: {
         'Content-Type': 'application/json',
         'Authorization': token
       },
       body: JSON.stringify({id:cursoTarget.id, sigla: cursoTarget.sigla, year:cursoTarget.year})
     });
-    return await response.json();  
+    const data = await response.json();  
+    return data;
   } 
   catch (error) {
-    console.log('Error al borrar ', error);
-    return false;
+    console.log('Error al borrar ', error.message);
   }
 };
 
@@ -100,7 +101,7 @@ const CoursesForm = ({ actualCourse, onActionEnded }) => {
             {message.text}
         </div>
 
-        <form className="d-flex flex-column gap-2 p-2">
+        <form onSubmit={handleSubmit} className="d-flex flex-column gap-2 p-2">
             <div className="input-group">
               <label className="col-form-label me-2">ID General (QR): </label>
               <input className="form-control" type="text" defaultValue={formData.id} 
@@ -128,10 +129,14 @@ const CoursesForm = ({ actualCourse, onActionEnded }) => {
                <button className="btn btn-secondary me-2" onClick={Clear}>
                   <i className="bi bi-eraser-fill"></i>
                </button>
-              <button className="btn btn-primary me-2" type="submit" onClick={e => handleSubmit(e)}>Guardar</button>
-              <button className="btn btn-danger" type="submit" onClick={e => handleDelete(e)}>Borrar</button>
+              <button className="btn btn-primary me-2" type="submit">Guardar</button>
+              <button className="btn btn-danger" onClick={e => handleDelete(e)}>Borrar</button>
             </div>
         </form>
+
+        <a href={`${url}/download_zip.php?folder=${formData.year}_${formData.sigla}`} className="btn btn-dark">
+            <i className="bi bi-download"></i> 
+        </a>
     </div>
    
   );

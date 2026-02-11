@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import ContainerFluid from '../components/container_fluid';
 import MainCanvas from '../components/main_canvas';
 
-
-//const API = 'http://localhost/api/login.php';
+const url = import.meta.env.VITE_API_URL;
 
 const Login = ({ onLoginSuccess }) => {
   const [datos, setDatos] = useState({username: '', password: ''});
@@ -19,7 +18,7 @@ const Login = ({ onLoginSuccess }) => {
 
     //fetch de login al escribir api/ reconoce la ruta para consumir php
     try {
-      const response = await fetch('/api/login.php', {
+      const response = await fetch(`${url}/login.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(datos)

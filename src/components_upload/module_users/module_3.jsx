@@ -4,6 +4,7 @@ import ProcessUsers from "./users_process";
 import ChangePassword from "./user_change_pass";
 import '../../assets/utils/c-estilos.css';
 
+const url = import.meta.env.VITE_API_URL;
 const INITIAL = { id: 0, username:''};
 function ModuleThree(){
     const [users, setUsers] = useState([]);
@@ -12,7 +13,7 @@ function ModuleThree(){
 
     const loadUsers = async() => {
         try{
-            const response = await fetch(`/api/users.php?t=${Date.now()}`);
+            const response = await fetch(`${url}/users.php?t=${Date.now()}`);
             const data = await response.json();
             setUsers(data);
             setLoading(false);

@@ -1,7 +1,8 @@
 import React,{useState,useEffect} from "react";
-
 import FileUploadForm from "./upload_files";
 import FilesUploaded from "./uploaded_files";
+
+const url = import.meta.env.VITE_API_URL;
 
 function ModuleTwo(){
     const [folders, setFolders] = useState([]);
@@ -10,7 +11,7 @@ function ModuleTwo(){
 
     const loadData = async () => {
         try {
-            const response = await fetch('/api/courses.php');
+            const response = await fetch(`${url}/courses.php`);
             const data = await response.json();
             setFolders(data);
         } 

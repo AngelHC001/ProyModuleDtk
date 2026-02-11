@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 
+const url = import.meta.env.VITE_API_URL;
 
 const eraseFile = async(pathString)=>{
     if(pathString === null ){ 
@@ -8,7 +9,7 @@ const eraseFile = async(pathString)=>{
     }
 
     try {
-        const response = await fetch('/api/file_process.php',{
+        const response = await fetch(`${url}/file_process.php`,{
             method:'DELETE',
             body: JSON.stringify({rutaArchivo: pathString})            
         });
@@ -49,7 +50,7 @@ function FilesUploaded({folderName, refreshSignal}){
             }
             setLoad(true);
             try{
-                const response = await fetch('/api/get_files.php',{
+                const response = await fetch(`${url}/get_files.php`,{
                     method:'POST',
                     body: JSON.stringify({folder: folderName}),
                     signal: signal

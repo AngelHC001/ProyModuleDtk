@@ -5,15 +5,6 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   
-  // Al usar '/api', Vite redirigirá a XAMPPs
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://localhost/PROYMODULEDTK/api', 
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    },
-  },
+  
 
 })

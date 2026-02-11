@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
+const url = import.meta.env.VITE_API_URL;
 
 /* COMPONENTES SEPARADOS */
 function FormHeader(){
@@ -17,7 +18,7 @@ const AddUser = async (nuevoData) => {
     const token = localStorage.getItem('token'); // Recuperamos la llave del bolsillo
 
     try{
-        const response = await fetch(`/api/users.php`, {
+        const response = await fetch(`${url}/users.php`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
@@ -40,7 +41,7 @@ const DeleteUser = async (userData) => {
    
     try {
         const token = localStorage.getItem('token'); // Recuperamos la llave del bolsillo
-        const response = await fetch('/api/users.php', {
+        const response = await fetch(`${url}/users.php`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
