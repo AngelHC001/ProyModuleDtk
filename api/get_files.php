@@ -1,5 +1,4 @@
 <?php
-//HEADERS
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -8,18 +7,16 @@ header("Content-Type: application/json");
 
 //EXTRAE EL JSON INDICE DE LA CARPETA
 function GetFiles(){
+    require_once '../config.php';
+    
     $input = file_get_contents('php://input'); 
     $datos = json_decode($input, true); 
-
     if (!$datos) {
         return ["success" => false, "message" => "No se recibieron datos válidos"];
     }
 
-    //nombreFolder YEAR-SIGLA
-    $nombreFolder = $datos['folder'] ?? '';
-    $endpoint = "../doc-point/directorios";
-    $jsonFolder = $endpoint."/".$nombreFolder.".json";
-    
+    $nombreFolder = $datos['folder'] ?? '';   //YEAR_SIGLA
+    $jsonFolder = DIRS_PATH . $nombreFolder.".json";
     if(!file_exists($jsonFolder)){
         return ["success" => false, "message" => "ERROR, EL ARCHIVO DE ESCRITURA NO EXISTE"]; 
     }

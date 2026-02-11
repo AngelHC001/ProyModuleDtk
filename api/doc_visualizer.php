@@ -3,11 +3,13 @@ header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
+require_once '../config.php';
 
 class VisualDocsController {
     //SE DESPLIEGA EN FORMULARIO
+  
     public function GetCoursesList(){
-        $json = file_get_contents('../doc-point/directory.json');
+        $json = file_get_contents(DOC_PATH . 'directory.json');
         $datos = json_decode($json, true);
         if (!$datos) { 
             return ["success" => false , "message" => "No existe el directorio general"]; 
@@ -18,9 +20,6 @@ class VisualDocsController {
     //ENVIA DATOS A URL DOCUMENT VIEW HACE EL FETCH
     //DEVUELVE LA RUTA TOTAL
     public function GetDocumentPath(){
-        $directorio = '../doc-point/directorios';
-        
-        //Extraer INPUT
         $json = file_get_contents('php://input');
         $datos = json_decode($json, true);
         if (!$datos) { 
@@ -32,7 +31,7 @@ class VisualDocsController {
         $year = $datos['fyear'] ?? '';
         
         $iniciales = $year."_".$sigla;
-        $jpoint = $directorio."/".$iniciales.".json";
+        $jpoint = DIRS_PATH . $iniciales. ".json";
 
         //EXISTE EL JSON?
         if(!file_exists($jpoint)){

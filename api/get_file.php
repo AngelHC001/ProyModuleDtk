@@ -4,8 +4,9 @@ header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
 // Recibe el nombre del archivo
+require_once '../config.php';
 $archivo = $_GET['name']; 
-$rutaReal = "../doc-point/certificados/" . $archivo;
+$rutaReal = CERT_PATH . $archivo;
 
 if (file_exists($rutaReal)) {
     $mime = mime_content_type($rutaReal);

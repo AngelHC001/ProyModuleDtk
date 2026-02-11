@@ -3,8 +3,10 @@ header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
+require_once '../config.php';
+
 $folderName = $_GET['folder'] ?? ''; // 1. Recibir nombre de la carpeta 
-$sourcePath = "../doc-point/certificados/" . $folderName;
+$sourcePath = CERT_PATH . $folderName;
 
 // Validaciones de seguridad básicas
 if (empty($folderName) || !is_dir($sourcePath)) {

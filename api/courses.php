@@ -4,9 +4,10 @@ header("Access-Control-Allow-Methods:  GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
+ require_once '../config.php'; //INICIAR VARIABLES GLOBALES
+
 //ESCRIBIR DIRECTORIO GENERAL JSON PARA QUE LO LEA LA PAGINA PRINCIPAL
 function WriteJson($mode, $folderData){
-    require_once '../config.php';
     $json_main = DOC_PATH . "directory.json"; //docpoint/directory
     if(!file_exists($json_main)){ return false; }
     
@@ -66,15 +67,11 @@ function WriteJson($mode, $folderData){
 
 //CREA CARPETA PARA ARCHIVOS Y JSON PARA LECTURA DE QR
 function CreateFolder(string $carpetaCurso){
-    require_once '../config.php';
-
-    //Crear carpeta y directorio archivos
     $folderDir = CERT_PATH . $carpetaCurso;
     $jsonDir = DIRS_PATH . $carpetaCurso.".json";
     $permisos = 0755;    
 
     try{
-        //El Directorio existe?
         if (!is_dir(CERT_PATH)) { return false; }
 
         //PREPARAR VALORES
@@ -112,9 +109,6 @@ function rmdir_recursive($dir) {
 
 
 function EraseFolder(string $carpetaCurso) {
-    require_once '../config.php';
-    //CERT_PATH = ../DOC-POINT/DIRECTORIOS/
-
     if(!is_dir(CERT_PATH)){ return false; }
 
     //Preparar rutas
@@ -130,6 +124,7 @@ function EraseFolder(string $carpetaCurso) {
         }
     }
 
+    //BORRAR FOLDER Y CONTENIDOS
     if(is_dir($folderTarget)){
         try {
             if (rmdir_recursive($folderTarget)) {
@@ -148,12 +143,11 @@ function EraseFolder(string $carpetaCurso) {
 class CoursesController {
     //VER DIRECTORIO JSON    
     public function GetCourses(){
-        $json = file_get_contents('../doc-point/directory.json');
+        $json = file_get_contents(DOC_PATH . 'directory.json');
         $datos = json_decode($json, true);
         if (!$datos) { 
             return ["success" => false , "message" => "No existe el directorio general"]; 
         }
-       
         return $datos;
     }
 
@@ -200,11 +194,9 @@ class CoursesController {
             return ["success" => false, "message" => "No se recibieron datos válidos"];
         }
 
-        //Extraer credenciales
         $id = $datos['id'] ?? '';
         $sig = $datos['sigla'] ?? '';
         $year = $datos['year'] ?? '';
-
         $folderTarget = $year . "_" . $sig;
        
         //PROCESSO BORRAR FOLDER
@@ -222,8 +214,8 @@ class CoursesController {
 }
 
 
-try {
-    //INICIAR LOGICA
+try 
+{
     $controller = new CoursesController();
     switch($_SERVER['REQUEST_METHOD']){
         case 'GET':
@@ -242,5 +234,4 @@ try {
 } catch (Exception $th) {
     echo json_encode(["success" => false, "message"=> "ALGO SALIO MAL " . $th -> getMessage()]);
 }
-
 ?>

@@ -5,9 +5,11 @@ header("Access-Control-Allow-Methods:  GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
+require_once '../config.php';
+
 function WriteJson(int $mode, $userData){
     //ExtraerJSON
-    $jsonPath = __DIR__."../doc-point/users.json";
+    $jsonPath = DOC_PATH . "users.json";
     $jsonDoc = file_get_contents($jsonPath);
     $data = json_decode($jsonDoc, true);
     
@@ -49,7 +51,7 @@ function WriteJson(int $mode, $userData){
 class UsuarioController {
     //Devolver json con los datos
     public function GetUsers(){
-        $jsonPath = "../doc-point/users.json";
+        $jsonPath = DOC_PATH . "users.json";
         if(!is_file($jsonPath)){
             return ["success" => false, "message" => "ALGO SALIO MAL"];
         }
@@ -81,11 +83,8 @@ class UsuarioController {
 
     //DELETE
     public function DeleteUser(){
-        //require_once 'conn.php';
-        //Capturar el JSON que envía React
-        $json = file_get_contents('php://input'); //CHECAR
+        $json = file_get_contents('php://input'); 
         $datos = json_decode($json, true);
-        
         if (!$datos) { return ["success" => false, "message" => "SE RECIBIERON DATOS INVALIDOS"]; }
 
         //Extraer credenciales
@@ -101,7 +100,6 @@ class UsuarioController {
 
     //UPDATE
     public function UpdateUser(){
-        // Recibir datos ( id, currentPass y newPass )
         $input = file_get_contents('php://input'); 
         $datos = json_decode($input, true);
         if (!$datos) { return ["success" => false, "message" => "ALGO SALIO MAL"]; }
@@ -113,7 +111,7 @@ class UsuarioController {
         $newPass = $datos['newPassword'] ?? '';
 
         //EXTRAER JSON
-        $jsonPath = '../doc-point/users.json'; 
+        $jsonPath = DOC_PATH . 'users.json'; 
         $jsonContent = file_get_contents($jsonPath);
         $users = json_decode($jsonContent, true); 
 
@@ -147,7 +145,6 @@ class UsuarioController {
     
 
 try {
-    //INICIAR LOGICA
     $controller = new UsuarioController();
     switch($_SERVER['REQUEST_METHOD']){
         case 'GET':

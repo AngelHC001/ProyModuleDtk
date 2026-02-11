@@ -1,19 +1,16 @@
 <?php
-//HEADERS
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods:  GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
+  require_once '../config.php'; //iniciar globales
+
 function WriteJson(int $mode, string $folderName, $fileData){
-    //ExtraerJSON
-    $jsonPath = "../doc-point/directorios/".$folderName.".json";
+    $jsonPath = DIRS_PATH . $folderName. ".json";
     $jsonDoc = file_get_contents($jsonPath);
     $data = json_decode($jsonDoc, true);
-    //Existe el json?
-    if(!$data){
-        return false;
-    }
+    if(!$data){ return false; } //Existe el json?
 
     //MODE 1 => PUSH
     if($mode === 1 && count($fileData) === 2){
@@ -66,7 +63,7 @@ class FilesController {
 
         //DIRECTORIO FIJO
         $folder = $year . "_" . $sigla;
-        $endpoint = "../doc-point/certificados/$folder";
+        $endpoint = CERT_PATH . $folder;
 
         //OBTENER ARCHIVO
         if(isset($_FILES['docfile'])){
@@ -78,14 +75,13 @@ class FilesController {
             return ["success" => false, "message" => "NO HAY ARCHIVOS CARGADOS"];
         }
         
-        
         //EXISTE CARPETA
         if(!is_dir($endpoint)){
             return ["success" => false, "message" => "LA CARPETA NO EXISTE"];
         }
 
-        $newpath = trim("$endpoint/$fileName");
         //Añadio archivo a la carpeta?
+        $newpath = trim("$endpoint/$fileName");
         if (!move_uploaded_file($fileTmpPath, $newpath)) {
             return ["success" => false, "message" => "Error al mover el archivo"];
         }
@@ -104,15 +100,13 @@ class FilesController {
         //Capturar el JSON del frontend
         $json = file_get_contents('php://input'); 
         $datos = json_decode($json, true);
-
         if (!$datos) {
             return ["success" => false, "message" => "NO SE RECIBIERON DATOS VALIDOS"];
         }
 
         //UBICAR CARPETA/ARCHIVO 
         $pathTarget = $datos['rutaArchivo'] ?? ''; 
-        $endpoint = "../doc-point/certificados";
-        $target = $endpoint . "/" . $pathTarget; 
+        $target = CERT_PATH . $pathTarget; 
 
         //Carpeta y archivo Existen?
         if(!file_exists($target)){
@@ -135,8 +129,8 @@ class FilesController {
 }
 
 
-try {
-    //INICIAR LOGICA
+try 
+{
     $controller = new FilesController();
     switch($_SERVER['REQUEST_METHOD']){
         case 'POST':
@@ -151,5 +145,4 @@ try {
 } catch (Exception $th) {
     echo json_encode(["success" => false, "message" => "ALGO SALIO MAL $th"]);
 }
-
 ?>
