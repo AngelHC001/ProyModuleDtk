@@ -1,5 +1,4 @@
 <?php
-//HEADERS
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods:  GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -7,7 +6,8 @@ header("Content-Type: application/json");
 
 //ESCRIBIR DIRECTORIO GENERAL JSON PARA QUE LO LEA LA PAGINA PRINCIPAL
 function WriteJson($mode, $folderData){
-    $json_main = "../doc-point/directory.json";
+    require_once '../config.php';
+    $json_main = DOC_PATH . "directory.json"; //docpoint/directory
     if(!file_exists($json_main)){ return false; }
     
     //Extraer JSON
@@ -66,17 +66,16 @@ function WriteJson($mode, $folderData){
 
 //CREA CARPETA PARA ARCHIVOS Y JSON PARA LECTURA DE QR
 function CreateFolder(string $carpetaCurso){
-    $endpoint = "../doc-point/certificados";
-    $jsonpoint = "../doc-point/directorios";
+    require_once '../config.php';
 
     //Crear carpeta y directorio archivos
-    $folderDir = $endpoint."/".$carpetaCurso;
-    $jsonDir = $jsonpoint."/".$carpetaCurso.".json";
+    $folderDir = CERT_PATH . $carpetaCurso;
+    $jsonDir = DIRS_PATH . $carpetaCurso.".json";
     $permisos = 0755;    
 
     try{
         //El Directorio existe?
-        if (!is_dir($endpoint)) { return false; }
+        if (!is_dir(CERT_PATH)) { return false; }
 
         //PREPARAR VALORES
         $default = [["id" => "0000",  "ruta" => "curso/archivo.pdf"]];
@@ -84,7 +83,7 @@ function CreateFolder(string $carpetaCurso){
 
         //PROCESAR CARPETA VACIA EN CERTIFICADOS/
         if (!mkdir($folderDir, $permisos, true) && $json_data) {
-            return ["success" => false, "message" => "No se pudo escribir el archivo $jsonDir"];   
+            return ["success" => false, "message" => "No se pudo crear la carpeta"];   
         }
 
         //PROCESAR JSON EN DIRECTORIOS/
@@ -113,13 +112,14 @@ function rmdir_recursive($dir) {
 
 
 function EraseFolder(string $carpetaCurso) {
-    $endpoint = "../doc-point/certificados";
-    $jsonpoint = "../doc-point/directorios";
-    if(!is_dir($endpoint)){ return false; }
+    require_once '../config.php';
+    //CERT_PATH = ../DOC-POINT/DIRECTORIOS/
+
+    if(!is_dir(CERT_PATH)){ return false; }
 
     //Preparar rutas
-    $folderTarget = $endpoint . "/" . $carpetaCurso;
-    $jsonTarget = $jsonpoint . "/" . $carpetaCurso . ".json";
+    $folderTarget = CERT_PATH . $carpetaCurso;
+    $jsonTarget = DIRS_PATH . $carpetaCurso . ".json";
 
     //Proceso Borrar JSON
     if(file_exists($jsonTarget)){
@@ -240,7 +240,7 @@ try {
     }
 
 } catch (Exception $th) {
-    echo json_encode(["success" => false, "message"=> "ALGO SALIO MAL $th"]);
+    echo json_encode(["success" => false, "message"=> "ALGO SALIO MAL " . $th -> getMessage()]);
 }
 
 ?>

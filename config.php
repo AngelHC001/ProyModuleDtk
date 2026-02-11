@@ -6,7 +6,8 @@ define('ROOT_PATH', __DIR__ . '/');
 
 // Definimos rutas a carpetas específicas para no repetirlas
 define('DOC_PATH', ROOT_PATH . 'doc-point' . '/');
-define('API_PATH', ROOT_PATH . 'api' . '/');
+define('CERT_PATH', ROOT_PATH . 'doc-point/certificados/');
+define('DIRS_PATH', ROOT_PATH . 'doc-point/directorios/');
 
 // (Opcional) Configuración de URLs para el frontend (React)
 //define('BASE_URL', 'http://tu-dominio.com/');

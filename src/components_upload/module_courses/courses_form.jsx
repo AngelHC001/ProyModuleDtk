@@ -6,13 +6,13 @@ const url = import.meta.env.VITE_API_URL;
 const agregarCurso = async (nuevoCurso) => {
   try
   {
-    const token = localStorage.getItem('token'); // Recuperamos la llave del bolsillo
+    const token = localStorage.getItem('token');
     const response = await fetch(`${url}/courses.php`, {
       method: 'POST',
       headers: { 
         'Accept': 'application/json',
         'Content-Type': 'application/json', 
-        'Authorization': token // <--- AQUÍ MOSTRAMOS LA LLAVE
+        'Authorization': token
       },
       body: JSON.stringify(nuevoCurso)
     });
@@ -21,7 +21,6 @@ const agregarCurso = async (nuevoCurso) => {
   }
   catch (error) {
     console.error("Error al enviar:", error);
-    return false;
   }
 }
 
@@ -79,7 +78,7 @@ const CoursesForm = ({ actualCourse, onActionEnded }) => {
     
     if(confirmacion){
       const response = await eliminarCurso(actualCourse);
-      if (response) {
+      if (response.success) {
         onActionEnded();  
         Clear();
         setMessage({text:response.message, alert_mode:'alert-success'});
