@@ -119,7 +119,7 @@ const CoursesForm = ({ actualCourse, onActionEnded }) => {
               <input className="form-control" type="text" placeholder="(Ej. MEAD, EACD...)" 
                 defaultValue={formData.sigla} onChange={e => setFormData({...formData, sigla: e.target.value})} required/>
           
-              <input className="form-control" type="number" min={2000} defaultValue={formData.year} 
+              <input className="form-control" type="number" min={2020} defaultValue={formData.year} 
                 onChange={e => setFormData({...formData, year: e.target.value})} required/>
             </div>
 

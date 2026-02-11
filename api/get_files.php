@@ -4,11 +4,9 @@ header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
-
+require_once '../config.php';
 //EXTRAE EL JSON INDICE DE LA CARPETA
 function GetFiles(){
-    require_once '../config.php';
-    
     $input = file_get_contents('php://input'); 
     $datos = json_decode($input, true); 
     if (!$datos) {

@@ -1,11 +1,12 @@
 <?php
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Headers: Content-Type");
 
 // Recibe el nombre del archivo
 require_once '../config.php';
-$archivo = $_GET['name']; 
+
+$archivo = $_GET['filename']; 
 $rutaReal = CERT_PATH . $archivo;
 
 if (file_exists($rutaReal)) {

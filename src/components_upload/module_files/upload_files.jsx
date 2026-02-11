@@ -113,7 +113,7 @@ function FileUploadForm({onSelect, folderList = [], onUploadSuccess}){
                 <div className="input-group">
                     <label className="col-form-label me-2">Folio de Accesso: </label>
                     <input name="sigla" className="form-control" type="text" value={folio.sigla} readOnly/>
-                    <input name="num" className="form-control" type="number" value={num} min={0} max={50} 
+                    <input name="num" className="form-control" type="number" value={num} min={1}
                        onChange={handleNumber} required/>
                     <input name="year" className="form-control" type="text" value={folio.year} readOnly/>
                 </div>

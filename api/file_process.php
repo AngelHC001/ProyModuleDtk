@@ -4,7 +4,7 @@ header("Access-Control-Allow-Methods:  GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
-  require_once '../config.php'; //iniciar globales
+require_once '../config.php'; //iniciar globales
 
 function WriteJson(int $mode, string $folderName, $fileData){
     $jsonPath = DIRS_PATH . $folderName. ".json";

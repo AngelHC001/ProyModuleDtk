@@ -4,7 +4,7 @@ header("Access-Control-Allow-Methods:  GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
- require_once '../config.php'; //INICIAR VARIABLES GLOBALES
+require_once '../config.php'; //INICIAR VARIABLES GLOBALES
 
 //ESCRIBIR DIRECTORIO GENERAL JSON PARA QUE LO LEA LA PAGINA PRINCIPAL
 function WriteJson($mode, $folderData){
@@ -96,7 +96,6 @@ function CreateFolder(string $carpetaCurso){
 
 function rmdir_recursive($dir) {
     if (!is_dir($dir)) return false;
-    
     $files = array_diff(scandir($dir), array('.', '..'));  // Escanear contenido
     
     // Si es un directorio, llama a recursion
