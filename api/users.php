@@ -7,7 +7,7 @@ header("Content-Type: application/json");
 
 function WriteJson(int $mode, $userData){
     //ExtraerJSON
-    $jsonPath = "../doc-point/users.json";
+    $jsonPath = __DIR__."../doc-point/users.json";
     $jsonDoc = file_get_contents($jsonPath);
     $data = json_decode($jsonDoc, true);
     

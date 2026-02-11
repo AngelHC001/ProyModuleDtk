@@ -1,32 +1,36 @@
 <?php
-try {
-    // 1. Encabezados para que React reciba JSON
-    header("Access-Control-Allow-Origin: http://localhost:5173");
-    header("Access-Control-Allow-Methods: POST");
-    header("Access-Control-Allow-Headers: Content-Type");
-    header("Content-Type: application/json");
-   
-    //require_once 'conn.php';
-    
-    //Capturar el JSON que envía React
-    $json = file_get_contents('php://input'); //CHECAR
-    $datos = json_decode($json, true);
+header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json");
 
+try {
+    require_once '../config.php'; //INICIAR RUTAS GLOBALES
+    
+    //Capturar encapsulados JSON que envía React
+    $json = file_get_contents('php://input');
+    $datos = json_decode($json, true);
     if (!$datos) {
-        $response = ["success" => false, "message" => "SE RECIBIERON DATOS INVALIDOS"];
+        echo json_encode(["success" => false, "message" => "SE RECIBIERON DATOS INVALIDOS"]);
+        exit;
     }
 
     //Extraer credenciales
     $userInput = $datos['username'] ?? '';
     $passInput = $datos['password'] ?? '';
 
-    //Capturar el JSON que envía React
-    $jsonDir = file_get_contents('../doc-point/users.json'); //CHECAR
-    $users = json_decode($jsonDir, true);
-    $response = [];
+    //Consultar en users JSON
+    $jsonDir = DOC_PATH . 'users.json';
+    $jsonDoc = file_get_contents($jsonDir); 
+    if ($jsonDoc === false) {
+        throw new Exception("No se pudo leer el archivo de usuarios $jsonDir");
+    }
 
+    //VALIDACIÓN DE ARCHIVO USUARIOS
+    $users = json_decode($jsonDoc, true);
     if (!$users) {
-        $response = ["success" => false, "message" => "ALGO SALIO MAL"];
+        echo json_encode(["success" => false, "message" => "ERROR INTERNO: ALGO SALIO MAL CON LA DB "]);
+        exit; 
     }
 
     //BUSCAR USUARIO
@@ -39,33 +43,23 @@ try {
     }
 
     if (!$userFound) {
-        $response = ["success" => false, "message" => "CREDENCIALES INCORRECTAS (Usuario)"];
+        echo json_encode(["success" => false, "message" => "CREDENCIALES INCORRECTAS (Usuario)"]);
+        exit;
     }
 
-    if(password_verify($passInput, $userFound['pass'])){ //PASSWORD VERIFY
+    //PASSWORD VERIFY
+    if(password_verify($passInput, $userFound['pass'])){ 
         $response = ["success" => true, 
                         "token" => "SECRET_KEY_WORD", 
                         "username" => $userFound['name'], 
                         "id" => $userFound['id']];
+        echo json_encode($response);
     }
     else {
-        $response = ["success" => false, "message" => "CREDENCIALES INCORRECTAS"];
+        echo json_encode(["success" => false, "message" => "CREDENCIALES INCORRECTAS"]);
+        exit;
     }
-
-    echo json_encode($response); 
-
 } catch (Exception $e) {
-    echo json_encode(["success" => false, "message" => $e]);
+    echo json_encode(["success" => false, "message" => "ALGO SALIO MAL: " . $e -> getMessage()]);
 }
-
 ?>
-
-
-
-
-
-
-
-
-
-

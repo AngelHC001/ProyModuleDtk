@@ -16,7 +16,6 @@ const Login = ({ onLoginSuccess }) => {
     e.preventDefault();
     setError(''); // Limpiar errores previos
 
-    //fetch de login al escribir api/ reconoce la ruta para consumir php
     try {
       const response = await fetch(`${url}/login.php`, {
         method: 'POST',
@@ -26,15 +25,15 @@ const Login = ({ onLoginSuccess }) => {
       
       const data = await response.json();
       
-      // Guardar el token en el almacenamiento local del navegador
+      // Redirigir al dashboard
       if (data.success) {
-        onLoginSuccess(data.token,data.username,data.id);   // Redirigir al dashboard
+        onLoginSuccess(data.token,data.username,data.id);   
       }else {
-        setError(data.message || 'Credenciales incorrectas');
+        setError(`Ocurrio un error ${data.message}`);
       }
     } catch (err) {
-      setError('Error de conexión con el servidor');
       console.error(err);
+      setError('Error de conexión con el servidor', err);
     }
   };
 
