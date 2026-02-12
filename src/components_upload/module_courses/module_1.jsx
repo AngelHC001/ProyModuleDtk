@@ -11,34 +11,51 @@ const ModuleOne = () => {
   const [courses, setCourses] = useState([]);
   const [selected,setSelected] = useState(INITIAL_ST);
   const [loading, setLoading] = useState(true);
-
-  //LEER PHP
-  const loadCourses = async () => {
-    try {
-      const response = await fetch(`${url}/courses.php`);
-      const data = await response.json();
-      setCourses(data);
-      setLoading(false);
-    } 
-    catch (error) {
-      console.error("Error cargando cursos", error);
-    }
-  };
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleSelect = (course) =>{
     setSelected({...INITIAL_ST,...course});
   }
 
+  //Disparará el useEffect
+  const reloadCourses = () => {
+      setRefreshTrigger(prev => prev + 1);
+  };
+
+
   useEffect(() => {
-    return () => loadCourses();
-  }, []);
+    const controller = new AbortController();
+    const { signal } = controller;
+    
+    const loadCourses = async () => {
+      setLoading(true);
+      try {    
+        const response = await fetch(`${url}/courses.php`,{ method:'GET', signal:signal });
+        if (!response.ok) {
+              throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (!signal.aborted) { setCourses(data); }
+      } 
+      catch (error) {
+        console.error("Error cargando cursos", error);
+      }
+      finally{
+        if (!signal.aborted) { setLoading(false); }
+      }
+    }
+
+    loadCourses();
+    return () => controller.abort(); 
+  },[refreshTrigger]);
 
   return (
     <div className="row d-flex justify-content-center text-center gap-4 p-auto mb-4">
-      <CoursesForm key={selected.key} actualCourse={selected} onActionEnded={() => {loadCourses(); setSelected(INITIAL_ST); }}/>  
+      <CoursesForm key={selected.key} actualCourse={selected} onActionEnded={() => {reloadCourses(); setSelected(INITIAL_ST); }}/>  
       {loading ? <h6>Cargando Registros</h6> : <CoursesList listDir={courses} onSelect={handleSelect}/>    }
     </div>
   );
-};
+}
 
 export default ModuleOne;

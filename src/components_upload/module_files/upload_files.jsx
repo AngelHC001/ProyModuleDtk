@@ -1,4 +1,4 @@
-import React, {useState, useEffect } from "react"
+import React, {useState } from "react"
 
 const url = import.meta.env.VITE_API_URL;
 const DataProcess = async(formData) => {
@@ -17,18 +17,12 @@ const DataProcess = async(formData) => {
 
 function FileUploadForm({onSelect, folderList = [], onUploadSuccess}){
     const thisYear = new Date().getFullYear().toString();
-    const [loading,setLoading] = useState(true);
     const [message, setMessage] = useState({text:'',alertColor:'alert-secondary'});
     //Form States
     const [folio, setFolio] = useState({sigla:'CCCC', year:thisYear});
     const [file, setFile] = useState(null);
     const [num, setNum] = useState(0); //input de enmedio
 
-    useEffect(() => {
-        return () => {
-            folderList ? setLoading(false) : setLoading(true); 
-        }
-    })
 
     const handleChange = (e) =>{
         const value = e.target.value;
@@ -90,8 +84,7 @@ function FileUploadForm({onSelect, folderList = [], onUploadSuccess}){
                 <div className="input-group">
                     <label className="col-form-label me-2">Elegir Carpeta: </label>   
                     
-                    {loading ? <p>Cargando Carpetas</p> : 
-                        <select className="form-select" onChange={handleChange}>
+                         <select className="form-select" size={3} onChange={handleChange}>
                             {
                                 folderList.map((folder) => (
                                     <option key={folder.key} value={`${folder.sigla}-${folder.year}`}> 
@@ -99,7 +92,7 @@ function FileUploadForm({onSelect, folderList = [], onUploadSuccess}){
                                     </option>
                             ))}
                         </select>
-                    }
+                    
                     <button className="btn btn-outline-dark" onClick={() => {onSelect(`${folio.year}_${folio.sigla}`)}}>
                         <i className="bi bi-folder-fill me-1"></i>
                         Abrir
