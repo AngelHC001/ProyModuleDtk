@@ -1,10 +1,10 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Origin: https://datametrika.com/module_upload/");
 header("Access-Control-Allow-Methods:  GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
-require_once '../config.php';
+require_once dirname(__DIR__, 3) . '/ProyDatametrika_docpoint/config.php';
 
 function WriteJson(int $mode, $userData){
     //ExtraerJSON
@@ -70,7 +70,7 @@ class UsuarioController {
         //Extraer credenciales
         $id = random_int(1000,10000);
         $user = $datos['username'] ?? '';
-        $hashed = password_hash('dtmk_usuario',PASSWORD_DEFAULT);  //CREAR PASS DEFAULT
+        $hashed = password_hash(DTMK_PASS,PASSWORD_DEFAULT);  //CREAR PASS DEFAULT
        
         //id,user,hashed
         if(!WriteJson(1,[$id,$user,$hashed])){

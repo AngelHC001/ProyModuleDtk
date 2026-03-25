@@ -1,9 +1,24 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:5173");
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowed_origins = ['https://datametrika.com', 'https://www.datametrika.com'];
+
+if (in_array($origin, $allowed_origins)) {
+    header("Access-Control-Allow-Origin: " . $origin);
+}
+
+//header("Access-Control-Allow-Origin: https://datametrika.com");
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-require_once '../config.php';
+//CONTROL DE CACHE
+header("Expires: Tue, 01 Jan 2000 00:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+// Las instrucciones más importantes para HTTP 1.1
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false); 
+header("Pragma: no-cache"); // Para compatibilidad con HTTP 1.0
+
+require_once dirname(__DIR__, 3) . '/ProyDatametrika_docpoint/config.php';
 
 class VisualDocsController {
     //SE DESPLIEGA EN FORMULARIO

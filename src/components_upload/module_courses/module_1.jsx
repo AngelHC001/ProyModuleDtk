@@ -30,7 +30,7 @@ const ModuleOne = () => {
     const loadCourses = async () => {
       setLoading(true);
       try {    
-        const response = await fetch(`${url}/courses.php`,{ method:'GET', signal:signal });
+        const response = await fetch(`${url}/m1_courses.php`,{ method:'GET', signal:signal });
         if (!response.ok) {
               throw new Error(`Error HTTP: ${response.status}`);
         }

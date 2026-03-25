@@ -1,10 +1,10 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Origin: https://datametrika.com/");
 header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Allow-Headers: Content-Type");
 
 // Recibe el nombre del archivo
-require_once '../config.php';
+require_once dirname(__DIR__, 3) . '/ProyDatametrika_docpoint/config.php';
 
 $archivo = $_GET['filename']; 
 $rutaReal = CERT_PATH . $archivo;

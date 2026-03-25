@@ -7,7 +7,7 @@ const url = import.meta.env.VITE_API_URL;
 const ChangeRequest = async (formData) => {
     try{
         const token = localStorage.getItem('token');
-        const response = await fetch(`${url}/users.php`,{ 
+        const response = await fetch(`${url}/m3_users.php`,{ 
             method: 'PUT',
             headers: { 
                 'Content-Type': 'application/json',

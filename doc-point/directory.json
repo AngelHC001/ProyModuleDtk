@@ -1,0 +1,37 @@
+[
+    {
+        "key": 347,
+        "id": 9999,
+        "sigla": "CCCC",
+        "name": "Seleccione Curso",
+        "year": "2999"
+    },
+    {
+        "key": 421,
+        "id": 1763,
+        "sigla": "DEAIDI",
+        "name": "Diplomado Metodos Estadisticos y Analitica de Datos",
+        "year": "2023"
+    },
+    {
+        "key": 678,
+        "id": 2017,
+        "sigla": "DEACD",
+        "name": "Diplomado Estadistica Aplicada y Ciencia de Datos",
+        "year": "2023"
+    },
+    {
+        "key": 189,
+        "id": 1159,
+        "sigla": "EACD",
+        "name": "Estadistica Aplicada y Ciencia de Datos",
+        "year": "2025"
+    },
+    {
+        "key": 912,
+        "id": 1135,
+        "sigla": "MEAD",
+        "name": "Metodos Estadisticos y Analitica de Datos",
+        "year": "2025"
+    }
+]

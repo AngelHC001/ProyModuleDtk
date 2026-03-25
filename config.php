@@ -11,6 +11,7 @@ define('DOC_PATH', ROOT_PATH . 'doc-point' . '/');
 define('CERT_PATH', ROOT_PATH . 'doc-point/certificados' . '/');
 define('DIRS_PATH', ROOT_PATH . 'doc-point/directorios' . '/');
 
+define('DTMK_PASS','dtmk_usuario');
 // (Opcional) Configuración de URLs para el frontend (React)
 //define('BASE_URL', 'http://tu-dominio.com/');
 ?>

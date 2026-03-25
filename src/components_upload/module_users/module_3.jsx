@@ -22,7 +22,7 @@ function ModuleThree(){
         
         const loadUsers = async() => {
             try{
-                const response = await fetch(`${url}/users.php?t=${Date.now()}`, {
+                const response = await fetch(`${url}/m3_users.php?t=${Date.now()}`, {
                     method:'GET',
                     signal:signal
                 });

@@ -21,7 +21,7 @@ function ModuleTwo(){
         const loadData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`${url}/courses.php`,{method:'GET', signal:signal});
+                const response = await fetch(`${url}/m1_courses.php`,{method:'GET', signal:signal});
                 const data = await response.json();
 
                 if(!signal.aborted){ setFolders(data); }

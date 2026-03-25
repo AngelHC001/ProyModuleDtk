@@ -1,16 +1,33 @@
-# React + Vite
+# ProyModuleDTK
+Denominado como el Modulo de Carga de Archivos de Datametrika
+El propósito general de este pequeño proyecto es la carga de constancias para su posterior visualización y descarga.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Al ser un proyecto con menor cantidad de usuarios y objetos complejos, tomé la decisión de estructurar los datos basados en archivos JSON.
 
-Currently, two official plugins are available:
+Este modulo sirve a la ProyDatametrika en su sección 'Acceso a Constancias.'
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Las mecánicas de este pequeño sistema consisten en:
+- Crear y Borrar Carpetas.
+- Introducir archivos en las carpetas creadas.
+- Manejo de usuarios (Alta, Baja y cambio de contraseña.)
 
-## React Compiler
+## Entorno de desarrollo
+React + Vite: Framework JavaScript Basado en componentes. Conociendo las variantes que tiene esta biblioteca, El entorno elegido es React+Vite.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Bluehost: Webhost compartido manejado por Datametrika, no se requirió ningún ajuste especifico para alojar paginas no_Wordpress.
 
-## Expanding the ESLint configuration
+Backend PHP: Es en este proyecto donde se los archivos PHP forman
+parte en una carpeta por separado sin que este se integre dentro
+de React.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Archivos para Pruebas locales
+- Una carpeta doc-point con ejemplos de Constancias.
+- config.php se localiza en la raiz para pruebas locales, el .zip posee este archivo en modo produccion. 
+- El archivo ProyModuleDTK.pdf alojado contiene notas de desarrollador, dependencias y estructura del proyecto. Se recomienda crear un proyecto React+Vite vacio primero.
+
+## Experiencias:
+- Diseñe e implemente de una API REST para facilitar una comunicación fluida entre la interfaz de usuario y el servidor, permitiendo el intercambio estructurado mediante formato JSON.
+- Comprendi como los protocolos de transferencia impactan en la respuesta del sistema hacia el usuario final.
+- Desarrollé mecanismos básicos de autenticación y la validación de entrada de datos, no obstante  Seguridad Informatica es mi area de mejora.
+
+

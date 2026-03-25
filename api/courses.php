@@ -1,10 +1,18 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Origin: https://datametrika.com/module_upload/");
 header("Access-Control-Allow-Methods:  GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
-require_once '../config.php'; //INICIAR VARIABLES GLOBALES
+//CONTROL DE CACHE
+header("Expires: Tue, 01 Jan 2000 00:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+// Las instrucciones más importantes para HTTP 1.1
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false); 
+header("Pragma: no-cache"); // Para compatibilidad con HTTP 1.0
+
+require_once dirname(__DIR__, 3) . '/ProyDatametrika_docpoint/config.php'; //INICIAR VARIABLES GLOBALES
 
 //ESCRIBIR DIRECTORIO GENERAL JSON PARA QUE LO LEA LA PAGINA PRINCIPAL
 function WriteJson($mode, $folderData){

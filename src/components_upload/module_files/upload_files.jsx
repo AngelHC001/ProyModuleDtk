@@ -3,7 +3,7 @@ import React, {useState } from "react"
 const url = import.meta.env.VITE_API_URL;
 const DataProcess = async(formData) => {
     try {
-        const response = await fetch(`${url}/file_process.php`,{
+        const response = await fetch(`${url}/m2_file_process.php`,{
             method:'POST',
             body: formData
         });

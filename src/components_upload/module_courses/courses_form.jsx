@@ -7,7 +7,7 @@ const agregarCurso = async (nuevoCurso) => {
   try
   {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${url}/courses.php`, {
+    const response = await fetch(`${url}/m1_courses.php`, {
       method: 'POST',
       headers: { 
         'Accept': 'application/json',
@@ -28,7 +28,7 @@ const agregarCurso = async (nuevoCurso) => {
 const eliminarCurso = async (cursoTarget) => {
   try {
     const token = localStorage.getItem('token'); 
-    const response = await fetch(`${url}/courses.php`, { 
+    const response = await fetch(`${url}/m1_courses.php`, { 
       method: 'DELETE', headers: {
         'Content-Type': 'application/json',
         'Authorization': token
@@ -133,7 +133,7 @@ const CoursesForm = ({ actualCourse, onActionEnded }) => {
             </div>
         </form>
 
-        <a href={`${url}/download_zip.php?folder=${formData.year}_${formData.sigla}`} className="btn btn-dark">
+        <a href={`${url}/m1_download_zip.php?folder=${formData.year}_${formData.sigla}`} className="btn btn-dark">
             <i className="bi bi-download"></i> 
         </a>
     </div>
