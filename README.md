@@ -21,8 +21,8 @@ parte en una carpeta por separado sin que este se integre dentro
 de React.
 
 ## Archivos para Pruebas locales
-- Una carpeta doc-point con ejemplos de Constancias.
-- config.php se localiza en la raiz para pruebas locales, el .zip posee este archivo en modo produccion. 
+- Una carpeta doc-point con la estructura de almacenamiento, certificados, directorios JSON y variables globales (config.php)
+- config.php se localiza en la raiz para pruebas locales, este archivo debe estar en doc-point en modo produccion. 
 - El archivo ProyModuleDTK.pdf alojado contiene notas de desarrollador, dependencias y estructura del proyecto. Se recomienda crear un proyecto React+Vite vacio primero.
 
 ## Experiencias:
