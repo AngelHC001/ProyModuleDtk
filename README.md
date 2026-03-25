@@ -24,6 +24,7 @@ de React.
 - Una carpeta doc-point con la estructura de almacenamiento, certificados, directorios JSON y variables globales (config.php)
 - config.php se localiza en la raiz para pruebas locales, este archivo debe estar en doc-point en modo produccion. 
 - El archivo ProyModuleDTK.pdf alojado contiene notas de desarrollador, dependencias y estructura del proyecto. Se recomienda crear un proyecto React+Vite vacio primero.
+- El ManualModule.pdf es el manual de usuario de la página final, contiene capturas del trabajo realizado.
 
 ## Experiencias:
 - Diseñe e implemente de una API REST para facilitar una comunicación fluida entre la interfaz de usuario y el servidor, permitiendo el intercambio estructurado mediante formato JSON.
