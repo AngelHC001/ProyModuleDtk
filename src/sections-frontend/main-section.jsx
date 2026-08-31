@@ -3,7 +3,7 @@ import React,{useState} from "react";
 import { ViewContext } from "../components/viewContext";
 
 import ContainerFluid from '../components/container_fluid';
-import ModuleOne from "./module_courses/module_1";
+import ModuleOne from "./module_folders/module_1";
 import ModuleTwo from "./module_uploads/module_2";
 import ModuleThree from "./module_users/module_3";
 import Login from "./module_login";
@@ -17,7 +17,7 @@ const TABS_CONFIG = [
 ];
 
 function UploadsModule(){
-    const [activeView,setActiveView] = useState({type:'folders'});
+    const [activeView, setActiveView] = useState({type:'folders'});
     //const [estaLogueado, setEstaLogueado] = useState(() => { return !!localStorage.getItem('token'); }); 
     /*
     //Guardar la Sesion
