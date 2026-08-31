@@ -76,18 +76,38 @@ function FilesUploaded({folderName, refreshSignal}){
                 <div className="alert alert-secondary">
                     <small>{selected}</small>  
                 </div>
-              
-                <div className="d-flex justify-content-center gap-2 mb-2">
-                    <button className="btn btn-outline-secondary" onClick={() => setSelected(null)}>
-                        <i className="bi bi-eraser-fill me-1"></i>
-                        Cancelar
-                    </button>
 
-                    <button className="btn btn-outline-danger" onClick={(e) => handleDelete(e,selected)}>
-                        <i className="bi bi-trash-fill me-1"></i>
-                        Borrar
-                    </button>
-                </div>
+
+                <table className="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Constancia <i className="bi bi-file-pdf"/></th>
+                            <th>Opciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {
+                            <tr>
+                                <td>99</td>
+                                <td>AAAA</td>
+                                <td>          
+                                    <button className="btn btn-info btn-sm me-1" onClick={(e) => handleDelete(e,selected)}>
+                                        <i className="bi bi-download"></i>
+                                    </button>
+
+                                    <button className="btn btn-danger btn-sm" onClick={(e) => handleDelete(e,selected)}>
+                                        <i className="bi bi-trash2"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                {/*
+        
 
                 <div className="files-list mb-2">
                     {
@@ -105,7 +125,7 @@ function FilesUploaded({folderName, refreshSignal}){
                             ))}
                         </ul>
                     }
-                </div>
+                </div>/*/}
             </div>
         )
     }
@@ -114,7 +134,6 @@ function FilesUploaded({folderName, refreshSignal}){
         return(
             <div className="col-md-4 bg-light rounded shadow">
                 <h3 className="slogan">Documentos de la carpeta</h3>
-                <h6>Seleccion por defecto 2999-CCCC</h6>
             </div>
         )
     }

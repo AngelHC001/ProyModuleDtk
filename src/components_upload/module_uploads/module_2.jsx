@@ -1,11 +1,10 @@
-import React,{useState,useEffect} from "react";
-import FileUploadForm from "./upload_files";
-import FilesUploaded from "./uploaded_files";
+import React from "react";
+import FileUploadForm from "./uploads_form";
+import FilesUploaded from "./uploads_list";
 
-const url = import.meta.env.VITE_API_URL;
 
 function ModuleTwo(){
-    const [folders, setFolders] = useState([]);
+    /*const [folders, setFolders] = useState([]);
     const [selected, setSelected] = useState('2999_CCCC');
     const [refreshSignal, setRefreshSignal] = useState(0);
     const [loading,setLoading] = useState(true);
@@ -36,15 +35,12 @@ function ModuleTwo(){
 
         loadData();
         return () => controller.abort();
-    },[refreshSignal]);
+    },[refreshSignal]);*/
 
     return(
         <div className="row d-flex justify-content-center gap-4 mb-4 text-center">
-            {loading ? <p>Cargando Cursos</p> : 
-                <FileUploadForm onSelect={handleSelect} folderList={folders} onUploadSuccess={triggerRefresh}/> }
-
-            {/* MANDA NOMBRE DE FOLDER PARA SCANEAR */}
-            <FilesUploaded folderName={selected} refreshSignal={refreshSignal} />
+            <FileUploadForm/>
+            <FilesUploaded />
         </div>
     )
 }

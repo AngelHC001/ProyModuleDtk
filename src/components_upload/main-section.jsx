@@ -2,7 +2,7 @@ import React,{useState} from "react";
 
 import ContainerFluid from '../components/container_fluid';
 import ModuleOne from "./module_courses/module_1";
-import ModuleTwo from "./module_files/module_2";
+import ModuleTwo from "./module_uploads/module_2";
 import ModuleThree from "./module_users/module_3";
 import Login from "./module_login";
 
