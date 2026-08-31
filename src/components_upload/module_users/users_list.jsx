@@ -5,7 +5,7 @@ const userOnline = localStorage.getItem('id');
 function Users({listUsers = [], onSelect}){
     listUsers = listUsers.filter(u => u.id != Number(userOnline));
     return(
-        <div className="col-md-4 bg-light rounded shadow p-2">
+        <div className="col-md-5 bg-light rounded shadow p-2">
             <h2 className="slogan-2">Usuarios Registrados</h2>
             <div className="bg-theme rounded p-3">
                 <ul className="list-group profiles">

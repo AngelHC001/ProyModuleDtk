@@ -62,9 +62,7 @@ const ChangePassword = ({onPasswordChange}) => {
                     <h5 className="mb-0">Cambiar Contraseña</h5>
                 </div>
 
-                <span className={`alert ${message.color} mb-0`}>
-                    {message.text}
-                </span>
+              
 
                 <div className="card-body">
                     <form className='d-flex flex-column gap-2' onSubmit={handleSubmit}>
@@ -81,11 +79,11 @@ const ChangePassword = ({onPasswordChange}) => {
                         </div>
 
                         <div>
-                            <button type="button" className="btn btn-secondary me-2" onClick={Clear}>
-                                <i className="bi bi-eraser-fill"></i>
+                            <button type="button" className="btn btn-dark me-2" onClick={Clear}>
+                                <i className="bi bi-arrow-counterclockwise"></i>
                             </button>
 
-                            <button type="submit" className="btn btn-warning text-white">
+                            <button type="submit" className="btn btn-success text-white">
                                 <i className="bi bi-pencil-square"></i>Cambiar
                             </button>
                         </div>

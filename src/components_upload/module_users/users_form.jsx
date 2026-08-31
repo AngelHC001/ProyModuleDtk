@@ -110,10 +110,6 @@ const ProcessUsers = ({onUser, onActionEnded}) => {
         <div className="card border-0">
             <FormHeader/>
             <div className="card-body">
-                <div className={`alert ${message.color} mb-1`}>
-                    {message.text}
-                </div>
-
                 <form className='d-flex flex-column gap-2'>
                     {/* Campo Usuario */}
                     <div className="input-group">
@@ -124,16 +120,12 @@ const ProcessUsers = ({onUser, onActionEnded}) => {
 
                     {/* Grupo de Botones */}
                     <div className="d-flex flex-wrap gap-2 justify-content-center">
-                        <button type="button" className="btn btn-secondary" onClick={(e) => handleSubmit(e,'Cancelar')}>
-                            <i className="bi bi-eraser-fill"></i>
+                        <button type="button" className="btn btn-dark" onClick={(e) => handleSubmit(e,'Cancelar')}>
+                            <i className="bi bi-arrow-counterclockwise"></i>
                         </button>
  
                         <button type="button" className="btn btn-success" onClick={(e) => handleSubmit(e, 'Alta')}>
                             <i className="bi bi-person-plus-fill me-2"></i>Agregar
-                        </button>
-
-                        <button type="button" className="btn btn-danger" onClick={(e) => handleSubmit(e, 'Baja')}>
-                            <i className="bi bi-trash-fill me-2"></i>Eliminar
                         </button>
                     </div>
                 </form>

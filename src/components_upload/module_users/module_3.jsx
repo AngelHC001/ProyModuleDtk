@@ -1,13 +1,11 @@
 import React, {useEffect,useState} from "react";
-import Users from "./users";
-import ProcessUsers from "./users_process";
-import ChangePassword from "./user_change_pass";
+import Users from "./users_list";
+import ProcessUsers from "./users_form";
+import ChangePassword from "./users_pass";
 import '../../assets/utils/c-estilos.css';
 
-const url = import.meta.env.VITE_API_URL;
-const INITIAL = { id: 0, username:''};
 function ModuleThree(){
-    const [users, setUsers] = useState([]);
+    /*const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [userSelected, setUserSelected] = useState(INITIAL);
     const [refreshSignal, setRefreshSignal] = useState(0);
@@ -38,15 +36,15 @@ function ModuleThree(){
 
         loadUsers();
         return () => controller.abort();
-    },[refreshSignal]);
+    },[refreshSignal]);*/
 
     return(
         <div className="row d-flex justify-content-center text-center gap-5 p-auto mb-4">
-            <div className="col-md-5">
-                <ProcessUsers key={userSelected.id} onUser={userSelected} onActionEnded={() => {ReloadData(); setUserSelected(INITIAL);} }/>
-                <ChangePassword onPasswordChanged={() => ReloadData()} />
+            <div className="col-md-6">
+                <ProcessUsers/>
+                <ChangePassword/>
             </div>
-            {loading ? <h6>Cargando Usuarios</h6> : <Users listUsers={users} onSelect={handleSelect} /> }
+            <Users/>
         </div>
     ) 
 }

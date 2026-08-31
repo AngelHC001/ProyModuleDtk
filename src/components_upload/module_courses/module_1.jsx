@@ -52,7 +52,7 @@ const ModuleOne = () => {
   },[refreshTrigger]);
   */
   return (
-    <div className="row d-flex justify-content-center text-center gap-4 p-auto mb-4">
+    <div className="row d-flex justify-content-center text-center gap-4 p-auto">
       <CoursesForm/>  
       <CoursesList/>    
     </div>
