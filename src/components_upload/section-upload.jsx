@@ -17,7 +17,7 @@ const TABS_CONFIG = [
 function UploadsModule(){
     const [activeTab,setActiveTab] = useState('crear');
     const [estaLogueado, setEstaLogueado] = useState(() => { return !!localStorage.getItem('token'); }); 
-
+    /*
     //Guardar la Sesion
     const handleLoginSuccess = (token, username, id) => {
         localStorage.setItem('token', token);
@@ -41,7 +41,7 @@ function UploadsModule(){
     const activeTabConfig = TABS_CONFIG.find(t => t.id === activeTab);
     // Encuentra el componente activo
     const ActiveComponent = activeTabConfig ? activeTabConfig.component : null;
-
+        */
     return(
         <ContainerFluid>      
             <h1 className="text-center p-2 slogan-2">Gestión de Constancias y Certificados</h1>
