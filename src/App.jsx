@@ -4,11 +4,11 @@ import '../src/assets/utils/a-estilos.css';
 import '../src/assets/utils/c-estilos.css';
 
 import MainHeader from './components/main_header';
-import MainFooter from '../src/components/main_footer';
+import MainFooter from './components/main_footer';
 import ScrollToTop from './components/scroll_top';
 import MainCanvas from './components/main_canvas';
 
-import UploadsModule from './components_upload/main-section';
+import UploadsModule from './sections-frontend/main-section';
 
 function App() {
   return (
