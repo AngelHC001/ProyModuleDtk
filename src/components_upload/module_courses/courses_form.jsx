@@ -145,10 +145,10 @@ const CoursesForm = () => {
 
             <small>Se verá este Folio en "Cargar Archivos": <b> {formData.sigla}-##-{formData.year} </b> </small>
             <div>
-               <button className="btn btn-dark btn-lg me-2" onClick={Clear}>
+               <button className="btn-member me-2" onClick={Clear}>
                   <i className="bi bi-arrow-counterclockwise"/>
                </button>
-              <button className="btn btn-primary btn-lg me-2" type="submit">
+              <button className="btn-member me-2" type="submit">
                   <i className="bi bi-folder-fill me-1"/>
                   Crear
               </button>
