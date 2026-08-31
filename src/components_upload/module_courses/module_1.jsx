@@ -1,13 +1,14 @@
-import React,{ useState, useEffect } from 'react';
+import React from 'react';
 import CoursesList from './courses_list';
 import CoursesForm from './courses_form';
 import '../../assets/utils/c-estilos.css';
 
-const url = import.meta.env.VITE_API_URL;
-//MODULE ONE: JUNTA COURSESFORM Y COURSESLIST PARA LA PESTAÑA CREAR CARPETA
-const INITIAL_ST = {id:'',sigla:'',name:'',year:''}
+
+//MODULE ONE: JUNTA COURSESFORM Y COURSESLIST
 
 const ModuleOne = () => {
+
+  /*
   const [courses, setCourses] = useState([]);
   const [selected,setSelected] = useState(INITIAL_ST);
   const [loading, setLoading] = useState(true);
@@ -49,11 +50,11 @@ const ModuleOne = () => {
     loadCourses();
     return () => controller.abort(); 
   },[refreshTrigger]);
-
+  */
   return (
     <div className="row d-flex justify-content-center text-center gap-4 p-auto mb-4">
-      <CoursesForm key={selected.key} actualCourse={selected} onActionEnded={() => {reloadCourses(); setSelected(INITIAL_ST); }}/>  
-      {loading ? <h6>Cargando Registros</h6> : <CoursesList listDir={courses} onSelect={handleSelect}/>    }
+      <CoursesForm/>  
+      <CoursesList/>    
     </div>
   );
 }

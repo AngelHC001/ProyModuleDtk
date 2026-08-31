@@ -1,7 +1,6 @@
 import React, {useEffect, useState}from "react";
 
-const url = import.meta.env.VITE_API_URL;
-
+/*
 //  Función para Crear
 const agregarCurso = async (nuevoCurso) => {
   try
@@ -24,6 +23,11 @@ const agregarCurso = async (nuevoCurso) => {
   }
 }
 
+
+        <a href={`${url}/m1_download_zip.php?folder=${formData.year}_${formData.sigla}`} className="btn btn-dark">
+            <i className="bi bi-download"></i> 
+        </a>
+
 // Función para Borrar
 const eliminarCurso = async (cursoTarget) => {
   try {
@@ -42,14 +46,33 @@ const eliminarCurso = async (cursoTarget) => {
     console.log('Error al borrar ', error.message);
   }
 };
-
+*/
 
 //-----------------FORMULARIO--------------------
 
-const CoursesForm = ({ actualCourse, onActionEnded }) => {
-  const [formData, setFormData] = useState({id: '',sigla: '',name: '',year: ''});
+const CoursesForm = () => {
   const [message, setMessage] = useState({text:'',alert_mode:'alert-secondary'}); //mode success - danger - none
+  const [formData, setFormData] = useState({id: '', sigla: '',name: '',year: ''});
   
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setFormData((prev) => ({...prev, name:[value]}))
+
+  } 
+
+  const handleSubmit = () => {
+
+  }
+
+  const Delete = () => {
+
+  }
+
+  const Clear = () => {   
+    setFormData({ id: '', sigla: '', name: '', year: '' });
+  }
+
+  /*
   useEffect(()=> {
     return () => {
       actualCourse ? setFormData(actualCourse) : 
@@ -89,53 +112,48 @@ const CoursesForm = ({ actualCourse, onActionEnded }) => {
     }
   }
 
-  const Clear = () => {   
-    setFormData({ id: '', sigla: '', name: '', year: '' });
-  }
+  */
 
   return (
-    <div className="col-md-5 shadow rounded bg-light">
-        <h1 className="slogan-2">Crear Nueva Carpeta</h1>
+    <div className="col-md-5 shadow rounded bg-light p-3">
+        <h2 className="slogan-2">Crear Nueva Carpeta</h2>
         <div className={`alert ${message.alert_mode}`} role="alert">
             {message.text}
         </div>
 
         <form onSubmit={handleSubmit} className="d-flex flex-column gap-2 p-2">
             <div className="input-group">
-              <label className="col-form-label me-2">ID General (QR): </label>
-              <input className="form-control" type="text" defaultValue={formData.id} 
-                onChange={e => setFormData({...formData, id: e.target.value})} required/>      
+              <label className="col-form-label me-2">
+                ID General <i className="ms-1 bi bi-qr-code"></i>
+              </label>
+              <input className="form-control" type="number" onChange={handleChange} required/>      
             </div>
 
             <div className="input-group">
               <label className="col-form-label me-2">Nombre Curso: </label>
-              <input className="form-control" type="text" defaultValue={formData.name} 
-                onChange={e => setFormData({...formData, name: e.target.value})} required/>        
+              <input className="form-control" type="text" onChange={handleChange} required/>        
             </div>
 
             <div className="input-group">
               <label className="col-form-label me-2">[Sigla Curso - Año]</label>
-              
               <input className="form-control" type="text" placeholder="(Ej. MEAD, EACD...)" 
-                defaultValue={formData.sigla} onChange={e => setFormData({...formData, sigla: e.target.value})} required/>
+                onChange={handleChange} required/>
           
-              <input className="form-control" type="number" min={2020} defaultValue={formData.year} 
-                onChange={e => setFormData({...formData, year: e.target.value})} required/>
+              <input className="form-control" type="number" min={2015} 
+              onChange={handleChange} required/>
             </div>
 
-            <span>Se verá este Folio en "Cargar Archivos": <b> {formData.sigla}-##-{formData.year} </b> </span>
+            <small>Se verá este Folio en "Cargar Archivos": <b> {formData.sigla}-##-{formData.year} </b> </small>
             <div>
-               <button className="btn btn-secondary me-2" onClick={Clear}>
-                  <i className="bi bi-eraser-fill"></i>
+               <button className="btn btn-dark btn-lg me-2" onClick={Clear}>
+                  <i className="bi bi-arrow-counterclockwise"/>
                </button>
-              <button className="btn btn-primary me-2" type="submit">Guardar</button>
-              <button className="btn btn-danger" onClick={e => handleDelete(e)}>Borrar</button>
+              <button className="btn btn-primary btn-lg me-2" type="submit">
+                  <i className="bi bi-folder-fill me-1"/>
+                  Crear
+              </button>
             </div>
         </form>
-
-        <a href={`${url}/m1_download_zip.php?folder=${formData.year}_${formData.sigla}`} className="btn btn-dark">
-            <i className="bi bi-download"></i> 
-        </a>
     </div>
    
   );

@@ -16,7 +16,7 @@ const TABS_CONFIG = [
 
 function UploadsModule(){
     const [activeTab,setActiveTab] = useState('crear');
-    const [estaLogueado, setEstaLogueado] = useState(() => { return !!localStorage.getItem('token'); }); 
+    //const [estaLogueado, setEstaLogueado] = useState(() => { return !!localStorage.getItem('token'); }); 
     /*
     //Guardar la Sesion
     const handleLoginSuccess = (token, username, id) => {
@@ -36,12 +36,12 @@ function UploadsModule(){
     if (!estaLogueado) {
         return <Login onLoginSuccess={handleLoginSuccess} />;
     }
-
+    */
      // Renderizar el componente activo
     const activeTabConfig = TABS_CONFIG.find(t => t.id === activeTab);
     // Encuentra el componente activo
     const ActiveComponent = activeTabConfig ? activeTabConfig.component : null;
-        */
+        
     return(
         <ContainerFluid>      
             <h1 className="text-center p-2 slogan-2">Gestión de Constancias y Certificados</h1>
@@ -55,7 +55,7 @@ function UploadsModule(){
                             {tab.label}
                         </button>
                     ))}
-                    <button onClick={handleLogout} className="btn btn-lg btn-outline-danger">
+                    <button className="btn btn-lg btn-outline-danger">
                     Cerrar Sesión </button>
                     
                     <div className="alert alert-info mb-0">

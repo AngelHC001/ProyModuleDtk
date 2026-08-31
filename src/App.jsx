@@ -8,7 +8,7 @@ import MainFooter from '../src/components/main_footer';
 import ScrollToTop from './components/scroll_top';
 import MainCanvas from './components/main_canvas';
 
-import UploadsModule from './components_upload/section-upload';
+import UploadsModule from './components_upload/main-section';
 
 function App() {
   return (
