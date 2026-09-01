@@ -31,7 +31,7 @@ export function useFolderCallback(folderData) {
     //Funcion para Borrar
     const deleteFolder = useMutation({
         mutationFn: async function eliminarCurso (folderData) {
-            const response = await fetch(`${API_URL}/s1_courses.php`, { 
+            const response = await fetch(`${API_URL}/s1_folders.php`, { 
                 method: 'DELETE', 
                 headers: { 'Content-Type': 'application/json'},
                 body: folderData

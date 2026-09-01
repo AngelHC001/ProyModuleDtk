@@ -35,7 +35,7 @@ const CoursesForm = () => {
   }
 
   return (
-    <div className="col-md-5 shadow rounded bg-light p-3">
+    <div className="col-md-4 shadow rounded bg-light p-3">
         <h2 className="slogan-2">Crear Nueva Carpeta</h2>
         <div className={`alert ${message.alert_mode}`} role="alert">
             {message.text}

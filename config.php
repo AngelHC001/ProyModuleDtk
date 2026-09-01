@@ -1,9 +1,9 @@
 <?php
+
 // config.php (Ubicado en la raíz)
 
 // Definimos la ruta absoluta de la raíz del proyecto
 // ProyDatametrika_docpoint
-//QUITAR DOCPOINT
 define('ROOT_PATH', __DIR__ . '/');
 
 // Definimos rutas a carpetas específicas para no repetirlas
@@ -12,6 +12,6 @@ define('CERT_PATH', ROOT_PATH . 'doc-point/certificados' . '/');
 define('DIRS_PATH', ROOT_PATH . 'doc-point/directorios' . '/');
 
 define('DTMK_PASS','dtmk_usuario');
-// (Opcional) Configuración de URLs para el frontend (React)
-//define('BASE_URL', 'http://tu-dominio.com/');
+define('BASE_URL','http://localhost:5173'); //https://datametrika.com/module_upload/ 
+
 ?>

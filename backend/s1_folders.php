@@ -1,8 +1,10 @@
 <?php
-header("Access-Control-Allow-Origin: https://datametrika.com/module_upload/");
+require_once '../config.php';
+
+header("Access-Control-Allow-Origin: " . BASE_URL);
 header("Access-Control-Allow-Methods:  GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header("Content-Type: application/json");
+header("Content-Type: application/json, charset=UTF-8");
 
 //CONTROL DE CACHE
 header("Expires: Tue, 01 Jan 2000 00:00:00 GMT");
@@ -12,8 +14,9 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false); 
 header("Pragma: no-cache"); // Para compatibilidad con HTTP 1.0
 
-require_once dirname(__DIR__, 3) . '/ProyDatametrika_docpoint/config.php'; //INICIAR VARIABLES GLOBALES
 
+
+/*
 //ESCRIBIR DIRECTORIO GENERAL JSON PARA QUE LO LEA LA PAGINA PRINCIPAL
 function WriteJson($mode, $folderData){
     $json_main = DOC_PATH . "directory.json"; //docpoint/directory
@@ -144,8 +147,7 @@ function EraseFolder(string $carpetaCurso) {
         }
     }
 }
-
-
+*/
 
 class CoursesController {
     //VER DIRECTORIO JSON    
@@ -157,7 +159,8 @@ class CoursesController {
         }
         return $datos;
     }
-
+    
+    /*
     //INSERT
     public function InsertCourse(){
         //Capturar el JSON que envía React
@@ -217,7 +220,7 @@ class CoursesController {
         }
 
         return ["success" => true, "message" => "DIRECTORIO ELIMINADO"];
-    }
+    }*/
 }
 
 
@@ -225,17 +228,21 @@ try
 {
     $controller = new CoursesController();
     switch($_SERVER['REQUEST_METHOD']){
+        case 'OPTIONS':
+            http_response_code(200);
+            exit();
+
         case 'GET':
             echo json_encode($controller->GetCourses());
             break;
 
-        case 'POST':
-            echo json_encode($controller->InsertCourse());
-            break;
+        //case 'POST':
+          //  echo json_encode($controller->InsertCourse());
+           // break;
              
-        case 'DELETE':
-            echo json_encode($controller->DeleteCourse());
-            break;
+        //case 'DELETE':
+          //  echo json_encode($controller->DeleteCourse());
+          //  break;
     }
 
 } catch (Exception $th) {
