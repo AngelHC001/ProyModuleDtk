@@ -25,12 +25,11 @@ function CoursesList(){
     //Funcion Fetch
     const {data, isPending, isError} = useQuery({
         queryKey: ['folders'],
-        queryFn: async () => {
-            const controller = new AbortController();
+        queryFn: async ({signal}) => {
             const response = await fetch(`${API_URL}/s1_folders.php`,{ 
                 method:'GET', 
                 headers: { 'Content-Type':'application/json' },
-                signal: controller.signal 
+                signal: signal 
             });
 
             if (!response.ok) {

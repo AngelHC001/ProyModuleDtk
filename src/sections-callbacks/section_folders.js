@@ -16,16 +16,16 @@ export function useFolderCallback(folderData) {
         mutationFn: async function AgregarCurso(folderData) {
             const response = await fetch(`${API_URL}/s1_folders.php`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: folderData
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(folderData)
             });
-
-            if(!response.ok) throw new Error('Error al crear el folder');
+            
             return response.json();        
         },
 
-        onSuccess: () => {queryClient.invalidateQueries({queryKey})},
-        onError: () => {console.error("Error al crear folder")}
+        onSuccess: () => { queryClient.invalidateQueries({queryKey}) },
+
+        onError: (err) => { console.error("Error al crear folder", err.message) }
     });
 
     //Funcion para Borrar

@@ -11,11 +11,11 @@ const queryClient = new QueryClient();
 createRoot(document.getElementById('root')).render(
   <StrictMode>
       <QueryClientProvider client={queryClient}>
-          
+          <ReactQueryDevtools initialIsOpen={false}/>
             <BrowserRouter basename='/module_upload'>
               <App/> 
             </BrowserRouter>
-        
+          
       </QueryClientProvider>
   </StrictMode>,
 )

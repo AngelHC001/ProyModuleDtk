@@ -15,8 +15,6 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache"); // Para compatibilidad con HTTP 1.0
 
 
-
-/*
 //ESCRIBIR DIRECTORIO GENERAL JSON PARA QUE LO LEA LA PAGINA PRINCIPAL
 function WriteJson($mode, $folderData){
     $json_main = DOC_PATH . "directory.json"; //docpoint/directory
@@ -147,7 +145,7 @@ function EraseFolder(string $carpetaCurso) {
         }
     }
 }
-*/
+
 
 class CoursesController {
     //VER DIRECTORIO JSON    
@@ -159,8 +157,7 @@ class CoursesController {
         }
         return $datos;
     }
-    
-    /*
+
     //INSERT
     public function InsertCourse(){
         //Capturar el JSON que envía React
@@ -172,11 +169,11 @@ class CoursesController {
 
         //Extraer credenciales (STATE DE REACT)
         $id = $datos['id'] ?? '';
-        $nombre = $datos['name'] ?? ''; 
         $sigla = $datos['sigla'] ?? '';
+        $nombre = $datos['name'] ?? ''; 
         $year = $datos['year'] ?? '';
         $key = bin2hex(random_bytes(8));  // Genera una cadena de 16 caracteres alfanuméricos únicos
-        
+
         if (empty($id) || empty($nombre) || empty($sigla) || empty($year)) {
             return ["success" => false, "message" => "Faltan campos obligatorios para procesar el curso"];
         }
@@ -188,13 +185,13 @@ class CoursesController {
         }
 
         //PROCESO ESCRIBIR JSON
-        if(!WriteJson(1,[$key,$id,$sigla,$nombre,$year])){
+        if(!WriteJson(1 , [$key,$id,$sigla,$nombre,$year])){
             return ["success" => false, "message" => "ERROR AL REGISTRAR EL CURSO"];
         }
 
         return ["success" => true, "message" => "CARPETA  $nombreCarpeta CREADA"];
     }
-
+    /*
     //DELETE
     public function DeleteCourse(){ 
         //Capturar el JSON que envía React
@@ -236,9 +233,9 @@ try
             echo json_encode($controller->GetCourses());
             break;
 
-        //case 'POST':
-          //  echo json_encode($controller->InsertCourse());
-           // break;
+        case 'POST':
+            echo json_encode($controller->InsertCourse());
+            break;
              
         //case 'DELETE':
           //  echo json_encode($controller->DeleteCourse());
