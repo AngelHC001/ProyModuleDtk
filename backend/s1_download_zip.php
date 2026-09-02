@@ -1,9 +1,10 @@
 <?php
-header("Access-Control-Allow-Origin: https://datametrika.com/module_upload/");
+require_once '../config.php';
+//dirname(__DIR_,3)
+
+header("Access-Control-Allow-Origin: " . BASE_URL);
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
-
-require_once dirname(__DIR__, 3) . '/ProyDatametrika_docpoint/config.php';
 
 $folderName = $_GET['folder'] ?? ''; // 1. Recibir nombre de la carpeta 
 $sourcePath = CERT_PATH . $folderName;

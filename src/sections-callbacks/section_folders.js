@@ -13,14 +13,16 @@ export function useFolderCallback(folderData) {
 
     //Funcion para crear folder
     const createFolder = useMutation({
-        mutationFn: async function AgregarCurso(folderData) {
+        mutationFn: async function (folderData) {
             const response = await fetch(`${API_URL}/s1_folders.php`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(folderData)
             });
             
-            return response.json();        
+            console.log(response.json());
+            
+            //return response.json();       
         },
 
         onSuccess: () => { queryClient.invalidateQueries({queryKey}) },
@@ -30,14 +32,13 @@ export function useFolderCallback(folderData) {
 
     //Funcion para Borrar
     const deleteFolder = useMutation({
-        mutationFn: async function eliminarCurso (folderData) {
+        mutationFn: async function (folderData) {
             const response = await fetch(`${API_URL}/s1_folders.php`, { 
                 method: 'DELETE', 
                 headers: { 'Content-Type': 'application/json'},
-                body: folderData
+                body: JSON.stringify(folderData)
             });
 
-            if(!response.ok) throw new Error('Error al borrar el folder');
             return response.json();   
         },
         onSuccess: () => {queryClient.invalidateQueries({queryKey})},

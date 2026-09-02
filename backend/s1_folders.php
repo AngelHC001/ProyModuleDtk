@@ -61,8 +61,8 @@ function WriteJson($mode, $folderData){
         }
 
         //GUARDAR CAMBIOS
-        array_values($newData);
-        $newData = json_encode($newData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $newData = array_values($newData);
+        $newData = json_encode($newData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         if (file_put_contents($json_main, $newData)) {
             return true;
         }
@@ -191,7 +191,7 @@ class CoursesController {
 
         return ["success" => true, "message" => "CARPETA  $nombreCarpeta CREADA"];
     }
-    /*
+    
     //DELETE
     public function DeleteCourse(){ 
         //Capturar el JSON que envía React
@@ -205,6 +205,11 @@ class CoursesController {
         $sig = $datos['sigla'] ?? '';
         $year = $datos['year'] ?? '';
         $folderTarget = $year . "_" . $sig;
+
+        if (empty($id) || empty($sig) || empty($year)) {
+            return ["success" => false, "message" => "No hay suficientes datos para procesar"];
+        }
+
        
         //PROCESSO BORRAR FOLDER
         if(!EraseFolder($folderTarget)){
@@ -217,7 +222,7 @@ class CoursesController {
         }
 
         return ["success" => true, "message" => "DIRECTORIO ELIMINADO"];
-    }*/
+    }
 }
 
 
@@ -237,9 +242,9 @@ try
             echo json_encode($controller->InsertCourse());
             break;
              
-        //case 'DELETE':
-          //  echo json_encode($controller->DeleteCourse());
-          //  break;
+        case 'DELETE':
+            echo json_encode($controller->DeleteCourse());
+            break;
     }
 
 } catch (Exception $th) {

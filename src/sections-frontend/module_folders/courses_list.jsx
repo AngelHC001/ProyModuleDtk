@@ -7,14 +7,12 @@ const API_URL = import.meta.env.VITE_API_URL;
 function CoursesList(){
     const { deleteFolder } = useFolderCallback();
 
-    const handleDelete = (e, folderData) => {
+    const handleDelete = async(e, folderData) => {
         e.preventDefault();
-
-        if(!confirm('Borrar folder, elminará tambien sus archivos')) 
-            return;
-
+        if(!confirm('Borrar folder, elminará tambien sus archivos')){ return; } 
+        
         try {
-            deleteFolder.mutateAsync(folderData)
+            await deleteFolder.mutateAsync(folderData)
             alert('Folder Borrado');
         } catch (error) {
             console.error(error.message);
@@ -39,8 +37,6 @@ function CoursesList(){
         }
     });
 
-   
-
     return(
         <div className="col-md-7 bg-light shadow rounded">
             <h1 className="slogan">Cursos Registrados</h1>
@@ -61,20 +57,20 @@ function CoursesList(){
 
                         <tbody>
                         {
-                            data?.map((course) => (
-                                course.id !== 9999 &&
-                                <tr className="row-table" key={course.key}> 
-                                    <td>{course.year}-{course.sigla}</td>
-                                    <td>{course.name}</td>
-                                    <td>{course.id}</td>
+                            data?.map((folder) => (
+                                folder?.id !== 9999 &&
+                                <tr className="row-table" key={folder?.key}> 
+                                    <td>{folder?.year}-{folder?.sigla}</td>
+                                    <td>{folder?.name}</td>
+                                    <td>{folder?.id}</td>
                                     <td>
-                                        <a href={`${API_URL}/s1_download_zip.php?folder=${course.year}_${course.sigla}`} 
+                                        <a href={`${API_URL}/s1_download_zip.php?folder=${folder?.year}_${folder?.sigla}`} 
                                         className="btn-member">
                                             <i className="bi bi-download"></i> 
                                         </a>
-                        
-                                        <button className="btn btn-danger"
-                                            onClick={handleDelete}>
+            
+                                        <button className="btn btn-danger" type="button"
+                                            onClick={(e) => handleDelete(e, folder)}>
                                             <i className="bi bi-trash2"/>
                                         </button>
                                     </td>
