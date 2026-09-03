@@ -2,7 +2,6 @@ import React, {useEffect,useState} from "react";
 import Users from "./users_list";
 import ProcessUsers from "./users_form";
 import ChangePassword from "./users_pass";
-import '../../assets/utils/c-estilos.css';
 
 function ModuleThree(){
     /*const [users, setUsers] = useState([]);

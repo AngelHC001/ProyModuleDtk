@@ -1,7 +1,6 @@
 import React from 'react';
 import CoursesList from './courses_list';
 import CoursesForm from './courses_form';
-import '../../assets/utils/c-estilos.css';
 
 //MODULE ONE: JUNTA COURSESFORM Y COURSESLIST
 const ModuleOne = () => {

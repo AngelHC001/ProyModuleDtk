@@ -1,5 +1,4 @@
 import React from "react";
-import '../assets/utils/a-estilos.css'
 
 function MainCanvas({ children }) { 
   return (

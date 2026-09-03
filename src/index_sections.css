@@ -1,4 +1,4 @@
-/* C-ESTILOS PARA TODO MODULO UPLOAD */
+/* ESTILOS PARA TODO MODULO UPLOAD */
 
 /* MODULO 1 COURSES - COURSES FORM */
 .courses-table{
@@ -9,7 +9,7 @@
 
 /* MODULO 2 ARCHIVOS*/
 .files-list{
-    height: 300px;
+    height: 400px;
     overflow-y: auto;
     overflow-x: hidden;
 }
