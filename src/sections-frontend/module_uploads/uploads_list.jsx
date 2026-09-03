@@ -1,142 +1,100 @@
-import React, {useState, useEffect} from "react";
-
-const url = import.meta.env.VITE_API_URL;
-
-const eraseFile = async(pathString)=>{
-    if(pathString === null ){ 
-        alert('Sin archivo elegido');
-        return; 
-    }
-
-    try {
-        const response = await fetch(`${url}/m2_file_process.php`,{
-            method:'DELETE',
-            body: JSON.stringify({rutaArchivo: pathString})            
-        });
-
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Algo salio mal',error);
-    }
-}
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useView } from '../../components/viewContext';
 
 
-function FilesUploaded({folderName, refreshSignal}){
-    const [load,setLoad] = useState(true);
-    const [files,setFiles] = useState([]);
-    const [selected, setSelected] = useState(null);
-   
-    const handleDelete = async (event, fileItem) => {
-        event.preventDefault();
-        const response = await eraseFile(fileItem);
-        if(response.success){
-            setFiles((prevFiles) => prevFiles.filter(f => f.ruta !== fileItem));
-            setSelected(null);
-            alert(response.message);
-        }
-    }
+const API_URL = import.meta.env.VITE_API_URL;
 
 
-    useEffect(() =>{
-        const controller = new AbortController();
-        const { signal } = controller;
-
-        const fetchFiles = async () => {
-            if(folderName === '2999_CCCC'){ 
-                setFiles([]);
-                setLoad(false); 
-                return; 
-            }
-            setLoad(true);
-            try{
-                const response = await fetch(`${url}/m2_get_files.php`,{
-                    method:'POST',
-                    body: JSON.stringify({folder: folderName}),
-                    signal: signal
-                });
-                const data = await response.json();
-                setFiles(data);
-            }catch(err){
-                console.error('ERROR AL LEER CARPETA ',err);
-            }
-            finally{
-                if (!signal.aborted) { setLoad(false); }
-            }
-        }
-        fetchFiles();
-        return () => controller.abort();
-    },[folderName,refreshSignal]);
+function FilesUploaded(){
+    const { activeView } = useView();
     
-    if(folderName !== '2999_CCCC'){
+    
+    const handleDownload = () => {
+        return;
+    }
+
+    const handleDelete = () => {
+        return;
+    }
+    //llega tarde o se pierde de inmediato
+    
+    //Funcion Fetch
+    const { data, isPending, isError } = useQuery({
+        queryKey: ['uploads', activeView.folder],
+        queryFn: async({signal}) => {
+            const selected = activeView.folder[0];
+        
+            const response = await fetch(`${API_URL}/s2_get_files.php`,{
+                method:'POST',
+                body: JSON.stringify({folder: `${selected?.year}_${selected?.sigla}`}),
+                signal: signal
+            });
+
+            if(!response.ok){
+                const data = await response.json();
+                throw new Error('Error al cargar '+ data.message);
+            }
+
+            return response.json();
+        },
+        enabled: !!activeView.folder
+    })
+    
+
+    if(!activeView.folder){
         return(
-            <div className="col-md-4 bg-light rounded shadow">
-                <h3 className="slogan">Documentos de la carpeta {folderName}</h3>
-                
-                <div className="alert alert-secondary">
-                    <small>{selected}</small>  
-                </div>
+            <div className="col-md-4">
+                 <h3 className="slogan">Selecciona una carpeta para visualizar</h3>
+            </div>
+        )
+    }
+    
+    return(
+        <div className="col-md-4 bg-light rounded shadow">
+            <h3 className="slogan">Documentos de la Carpeta</h3>
+            <h6 className="slogan">{111}</h6>
+            {isPending && <p>CARGANDO DATOS</p>}
+            {isError && <p>OCURRIO UN ERROR</p>}    
+            {data?.length === 0 && <p>LA CARPETA ESTA VACIA</p>}
 
-
-                <table className="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Constancia <i className="bi bi-file-pdf"/></th>
-                            <th>Opciones</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {
+            {
+                data?.length !== 0 &&
+                    <table className="table table-hover files-list">
+                        <thead>
                             <tr>
-                                <td>99</td>
-                                <td>AAAA</td>
+                                <th>#</th>
+                                <th>Constancia <i className="bi bi-file-pdf"/></th>
+                                <th>Opciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        {
+                            data?.map((f) => (
+                            
+                            <tr key={f.key}>
+                                <td>{f?.id}</td>
+                                <td>{f?.ruta}</td>
                                 <td>          
-                                    <button className="btn btn-info btn-sm me-1" onClick={(e) => handleDelete(e,selected)}>
+                                    <button className="btn btn-info btn-sm me-1" onClick={(e) => handleDownload(e,f?.ruta)}>
                                         <i className="bi bi-download"></i>
                                     </button>
 
-                                    <button className="btn btn-danger btn-sm" onClick={(e) => handleDelete(e,selected)}>
+                                    <button className="btn btn-danger btn-sm" onClick={(e) => handleDelete(e,f?.ruta)}>
                                         <i className="bi bi-trash2"></i>
                                     </button>
                                 </td>
                             </tr>
+                            ))
                         }
-                    </tbody>
-                </table>
-
-                {/*
-        
-
-                <div className="files-list mb-2">
-                    {
-                        load ? <p>Cargando</p> :
-                        <ul className="list-group">
-                            {
-                                files.length === 1 ? <p>La Carpeta esta vacia</p> :
-                                    files.map((item) => (
-                                        item.id === "0000" ? '' :
-                                        <li className="file-item list-group-item" key={item.id}>
-                                            <button className="btn" onClick={() => setSelected(item.ruta)}>
-                                                No. {item.id} - {item.ruta}
-                                            </button>
-                                        </li>
-                            ))}
-                        </ul>
-                    }
-                </div>/*/}
-            </div>
-        )
-    }
-    else
-    {
-        return(
-            <div className="col-md-4 bg-light rounded shadow">
-                <h3 className="slogan">Documentos de la carpeta</h3>
-            </div>
-        )
-    }
+                        </tbody>
+                    </table>
+                }
+        </div>
+    )
 }
+
+
 
 export default FilesUploaded;

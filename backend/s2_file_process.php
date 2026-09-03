@@ -1,5 +1,8 @@
 <?php
-header("Access-Control-Allow-Origin: https://datametrika.com/module_upload/");
+require_once '../config.php';
+//require_once dirname(__DIR__, 3) . '/ProyDatametrika_docpoint/config.php'; //iniciar globales
+
+header("Access-Control-Allow-Origin: " . BASE_URL);
 header("Access-Control-Allow-Methods:  GET, POST, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
@@ -12,8 +15,6 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false); 
 header("Pragma: no-cache"); // Para compatibilidad con HTTP 1.0
 
-
-require_once dirname(__DIR__, 3) . '/ProyDatametrika_docpoint/config.php'; //iniciar globales
 
 function WriteJson(int $mode, string $folderName, $fileData){
     $jsonPath = DIRS_PATH . $folderName. ".json";
@@ -114,8 +115,8 @@ class FilesController {
         }
 
         //UBICAR CARPETA/ARCHIVO 
-        $pathTarget = $datos['rutaArchivo'] ?? ''; 
-        $target = CERT_PATH . $pathTarget; 
+        $path = $datos['path'] ?? ''; 
+        $target = CERT_PATH . $path; 
 
         //Carpeta y archivo Existen?
         if(!file_exists($target)){
@@ -128,8 +129,8 @@ class FilesController {
         }
 
         //PROCESO REESCRIBIR JSON BORRAR ITEM
-        $justFolder = explode("/",$pathTarget)[0]; //YEAR_CURSO
-        if(!WriteJson(0,$justFolder,[$pathTarget])){
+        $justFolder = explode("/",$path)[0]; //YEAR_CURSO
+        if(!WriteJson(0,$justFolder,[$path])){
             return ["success" => false, "message" => "FALLO EN REESCRIBIR (fileput)"];
         }   
 

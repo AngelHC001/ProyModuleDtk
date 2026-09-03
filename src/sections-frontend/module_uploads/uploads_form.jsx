@@ -1,50 +1,31 @@
-import React, {useState } from "react"
+import React, {useRef, useState } from "react"
+import { useQuery } from "@tanstack/react-query";
+import { useView } from "../../components/viewContext";
+const API_URL = import.meta.env.VITE_API_URL;
 
-const url = import.meta.env.VITE_API_URL;
-const DataProcess = async(formData) => {
-    try {
-        const response = await fetch(`${url}/m2_file_process.php`,{
-            method:'POST',
-            body: formData
-        });
-        
-        return await response.json();
-    } catch (error) {
-        console.log('Error al subir',error);
-    }
-}
+function FileUploadForm(){
+    const { setActiveView } = useView();
+    const selectRef = useRef();
 
-
-function FileUploadForm({onSelect, folderList = [], onUploadSuccess}){
     const thisYear = new Date().getFullYear().toString();
     const [message, setMessage] = useState({text:'',alertColor:'alert-secondary'});
-    //Form States
-    const [folio, setFolio] = useState({sigla:'CCCC', year:thisYear});
-    const [file, setFile] = useState(null);
-    const [num, setNum] = useState(0); //input de enmedio
-
+    const [folio, setFolio] = useState({sigla:'CCCC', num: 0, year:thisYear}); 
+    const [file, setFile] = useState(null); 
 
     const handleChange = (e) =>{
-        const value = e.target.value;
-        if (value) {
-        const [sigla,year] = value.split('-');
-            setFolio({
-                ...folio,
-                sigla: sigla,
-                year: year,   
-            });
-        }
+        const {name, value} = e.target;
+        setFolio((prev) => ({...prev, [name]:value}))
     }
 
-    const handleNumber = (e) =>{
-        const value = e.target.value;
-        setNum(value);
+    const handleClear = () => {
+        setFolio({ sigla:'CCCC', num: 0, year:thisYear });
+        setFile(null);
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         //Contenedor
-        const formData = new FormData();
+        /*const formData = new FormData();
         formData.append('sigla',folio.sigla);
         formData.append('year',folio.year);
         formData.append('num',num);
@@ -61,15 +42,31 @@ function FileUploadForm({onSelect, folderList = [], onUploadSuccess}){
         }
         else{
             setMessage({text: response.message, alertColor:'alert-danger'});
-        }
+        }*/
     }
+ 
+    //Funcion Fetch
+    const {data, isPending, isError} = useQuery({
+        queryKey: ['uploads'],
+        queryFn: async ({signal}) => {
+            const response = await fetch(`${API_URL}/s1_folders.php`,{ 
+                method:'GET', 
+                headers: { 'Content-Type':'application/json' },
+                signal: signal 
+            });
 
-    //LIMPIAR FORMULARIO
-    const Clear = async (e) =>{
-        e.preventDefault();
-        setNum(0);
-        setFile(null);
-    } 
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            return response.json();   
+        }
+    });
+      
+    const handleOpenFolder = () => {
+        const selectedValue = selectRef.current.value; 
+        const folderfound = data?.filter(f => `${f.year}_${f.sigla}` === selectedValue)
+        setActiveView({type: 'uploads', folder: folderfound});
+    }
 
     return(
         <div className="col-md-5 bg-light rounded shadow p-3">
@@ -80,40 +77,46 @@ function FileUploadForm({onSelect, folderList = [], onUploadSuccess}){
                 {message.text}
             </div>
 
-            <form className="d-flex flex-column gap-3">
+            <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
                 <div className="input-group">
-                    <label className="col-form-label me-2">Elegir Carpeta: </label>   
-                    
-                         <select className="form-select" size={3} onChange={handleChange}>
-                            {
-                                folderList.map((folder) => (
-                                    <option key={folder.key} value={`${folder.sigla}-${folder.year}`}> 
-                                        {folder.year}-{folder.sigla}
-                                    </option>
-                            ))}
-                        </select>
-                    
-                    <button className="btn btn-outline-dark" onClick={() => {onSelect(`${folio.year}_${folio.sigla}`)}}>
-                        <i className="bi bi-folder-fill me-1"></i>
-                        Abrir
+                    <label className="col-form-label me-2">Elegir Carpeta: </label>
+                        {isPending && <p>CARGANDO DATOS</p>}
+                        {isError && <p>OCURRIO UN ERROR</p>}
+                        {
+                            data?.length !== 0 &&   
+                            <select className="form-select" size={3} ref={selectRef}>
+                                {
+                                    data?.map((folder) => (
+                                        folder?.id !== 9999 &&
+                                        <option key={folder?.key} value={`${folder?.year}_${folder?.sigla}`}> 
+                                            {folder.year}-{folder.sigla}
+                                        </option>
+                                ))}
+                            </select>
+                        }
+                    <button className="btn-member" type="button" onClick={handleOpenFolder}>
+                        <i className="fs-4 bi bi-folder-fill me-1"/>Abrir
                     </button>
                 </div>
 
                 <input className="form-control" type="file" accept=".pdf,.png,.jpg" 
                     onChange={(e) => setFile(e.target.files[0])} required/>
                
-
                 <div className="input-group">
                     <label className="col-form-label me-2">Folio de Accesso: </label>
                     <input name="sigla" className="form-control" type="text" value={folio.sigla} readOnly/>
-                    <input name="num" className="form-control" type="number" value={num} min={1}
-                       onChange={handleNumber} required/>
+                    <input name="num" className="form-control" type="number" value={folio.num} min={1}
+                       onChange={handleChange} required/>
                     <input name="year" className="form-control" type="text" value={folio.year} readOnly/>
                 </div>
 
-                <div className="d-flex gap-1">
-                    <button className="btn btn-primary" type="submit" onClick={e => handleSubmit(e)}>Subir Archivo</button>
-                    <button className="btn btn-danger" onClick={e => Clear(e)}>Cancelar</button>     
+                <div className="d-flex justify-content-center gap-1">
+                    <button className="btn-member" type="button" onClick={handleClear}>
+                        <i className="bi  bi-arrow-counterclockwise me-1"/>Cancelar
+                    </button>     
+                    <button className="btn-member" type="submit">
+                        <i className="bi bi-upload me-1"/> Subir Archivo
+                    </button>
                 </div>
 
                 {/* <ProgressBar progress={}/> */}

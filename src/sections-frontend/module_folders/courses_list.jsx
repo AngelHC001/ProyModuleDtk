@@ -23,7 +23,7 @@ function CoursesList(){
     //Funcion Fetch
     const {data, isPending, isError} = useQuery({
         queryKey: ['folders'],
-        queryFn: async ({signal}) => {
+        queryFn: async({signal}) => {
             const response = await fetch(`${API_URL}/s1_folders.php`,{ 
                 method:'GET', 
                 headers: { 'Content-Type':'application/json' },
@@ -45,7 +45,7 @@ function CoursesList(){
                 {isPending && 'CARGANDO CURSOS'}
                 {
                     data?.length !== 0 &&
-                    <table className="table table-hover">
+                    <table className="table table-hover courses-table">
                         <thead>
                             <tr>
                                 <th>CURSO</th>

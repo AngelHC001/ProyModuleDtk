@@ -2,9 +2,6 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
 import { ViewContext } from './components/viewContext';
-import '../src/assets/utils/a-estilos.css';
-import '../src/assets/utils/c-estilos.css';
-
 
 import MainHeader from './components/main_header';
 import MainFooter from './components/main_footer';
