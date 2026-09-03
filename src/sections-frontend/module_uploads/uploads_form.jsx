@@ -8,18 +8,18 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 function FileUploadForm(){
     const { activeView, setActiveView } = useView();
-    const { uploadMutation } = useUploadCallbacks();
+    const { uploadFile } = useUploadCallbacks();
     const selectRef = useRef();
 
     const thisYear = new Date().getFullYear().toString();
     const [message, setMessage] = useState({text:'', alertColor:'alert-secondary'});
-    const [folio, setFolio] = useState({sigla:'CCCC', num: 0, year:thisYear}); 
+    const [folio, setFolio] = useState({sigla:'CCCC', num: 1, year:thisYear}); 
     const [file, setFile] = useState(null); 
 
     useEffect(() => {
         if(activeView.folder){
             const selected = activeView.folder[0]; 
-            setFolio({sigla: selected.sigla, num:0, year: selected.year});
+            setFolio({sigla: selected.sigla, num: 1, year: selected.year});
         }
     },[activeView.folder]);
 
@@ -29,14 +29,14 @@ function FileUploadForm(){
     }
 
     const handleClear = () => {
-        setFolio({ sigla:'CCCC', num: 0, year:thisYear });
+        setFolio({ sigla:'CCCC', num: 1, year:thisYear });
         setFile(null);
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try{
-             const formData = new FormData();
+            const formData = new FormData();
             formData.append('sigla',folio.sigla);
             formData.append('num',folio.num);
             formData.append('year',folio.year);
@@ -45,8 +45,8 @@ function FileUploadForm(){
                 formData.append('docfile',file);
             }   
             
-            await uploadMutation.mutateAsync(formData);
-            handleClear();
+            await uploadFile.mutateAsync(formData);
+            setFile(null);
             setMessage({text: 'Archivo Subido', alertColor: 'alert-success'});
         }catch(err){
             console.log('ERROR AL SUBIR ARCHIVO ' +err.message);
@@ -86,7 +86,7 @@ function FileUploadForm(){
                 {message.text}
             </div>
 
-            <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
+            <form onSubmit={handleSubmit} encType="multipart/form-data" className="d-flex flex-column gap-3">
                 <div className="input-group">
                     <label className="col-form-label me-2">Elegir Carpeta: </label>
                         {isPending && <p>CARGANDO DATOS</p>}

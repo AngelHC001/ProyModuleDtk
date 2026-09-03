@@ -84,7 +84,8 @@ function CreateFolder(string $carpetaCurso){
         if (!is_dir(CERT_PATH)) { return false; }
 
         //PREPARAR VALORES
-        $default = [["id" => "0000",  "ruta" => "curso/archivo.pdf"]];
+        $key = bin2hex(random_bytes(8));
+        $default = [["key" => $key, "id" => "0000",  "ruta" => "curso/archivo.pdf"]];
         $json_data = json_encode($default, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         //PROCESAR CARPETA VACIA EN CERTIFICADOS/

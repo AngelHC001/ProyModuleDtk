@@ -26,10 +26,11 @@ function WriteJson(int $mode, string $folderName, $fileData){
     if($mode === 1 && count($fileData) === 2){
         $file = $fileData[0];  //fileName
         $num = $fileData[1];    //Num
+        $key = bin2hex(random_bytes(8));
 
         //CREAR NUEVOS DATOS
         $keyPath = $folderName ."/". $file;
-        $jsonKey = ["id" => $num,"ruta" => "$keyPath"]; 
+        $jsonKey = ["key" => $key, "id" => $num, "ruta" => $keyPath]; 
         //AGREGAR NUEVOS DATOS
         array_push($data,$jsonKey);        
         $newData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -68,9 +69,9 @@ class FilesController {
     public function UploadFile(){
         //DATOS DE FORMULARIO
         $sigla = $_POST['sigla'] ?? 'N/A';
-        $year = $_POST['year'] ?? 'N/A';
         $num = $_POST['num'] ?? '00';
-
+        $year = $_POST['year'] ?? 'N/A';
+       
         //DIRECTORIO FIJO
         $folder = $year . "_" . $sigla;
         $endpoint = CERT_PATH . $folder;
