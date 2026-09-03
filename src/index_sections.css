@@ -2,14 +2,14 @@
 
 /* MODULO 1 COURSES - COURSES FORM */
 .courses-table{
-    height: 400px;
+    max-height: 325px;
     overflow-y: auto;
     overflow-x: hidden;
 }
 
 /* MODULO 2 ARCHIVOS*/
 .files-list{
-    height: 400px;
+    max-height: 325px;
     overflow-y: auto;
     overflow-x: hidden;
 }

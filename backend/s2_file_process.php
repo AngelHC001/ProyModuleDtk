@@ -55,10 +55,13 @@ function WriteJson(int $mode, string $folderName, $fileData){
 
         //GUARDAR CAMBIOS 
         $newData = array_values($newData);
-        $process = file_put_contents($jsonPath, json_encode($newData,JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));  
-        //file_put dio falso
-        if ($process === false) { return false; }
+        $newData = json_encode($newData,JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         
+        //File_put dio falso
+        if(file_put_contents($jsonPath, $newData) === false){
+            return false;
+        }  
+         
         return true;
     }//if
 }

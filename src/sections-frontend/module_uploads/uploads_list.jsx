@@ -1,24 +1,44 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useView } from '../../components/viewContext';
-
+import { useUploadCallbacks } from "../../sections-callbacks/section_files";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+function FileOptions({path}){
+    const { eraseFile } = useUploadCallbacks();
+
+    const handleDelete = async (e,fileData) => {
+        e.preventDefault();
+        if(!confirm('¿Borrar este archivo?')){return; }
+
+        try {
+            await eraseFile.mutateAsync(fileData);
+            alert('Archivo eliminado de la carpeta');
+        } catch (error) {
+            console.error(error.message);
+            alert('Ocurrio un Error');
+        }
+    }
+    
+    return(
+        <div>
+            <a href='#' 
+                className="btn-member me-1">
+                <i className="bi bi-download"></i>
+            </a>
+           
+            <button className="btn btn-danger" type="button"
+            onClick={(e) => handleDelete(e, path)}>
+                <i className="bi bi-trash2"></i>
+            </button>
+        </div>
+    )
+}
 
 function FilesUploaded(){
     const { activeView } = useView();
-    
-    
-    const handleDownload = () => {
-        return;
-    }
-
-    const handleDelete = () => {
-        return;
-    }
-    //llega tarde o se pierde de inmediato
-    
+  
     //Funcion Fetch
     const { data, isPending, isError } = useQuery({
         queryKey: ['uploads', activeView.folder],
@@ -51,46 +71,39 @@ function FilesUploaded(){
     }
     
     return(
-        <div className="col-md-4 bg-light rounded shadow">
+        <div className="col-md-6 bg-light rounded shadow">
             <h3 className="slogan">Documentos de la Carpeta</h3>
-            <h6 className="slogan">{111}</h6>
+            <h6 className="slogan">{activeView?.folder[0].name} - {activeView?.folder[0].year}</h6>
             {isPending && <p>CARGANDO DATOS</p>}
             {isError && <p>OCURRIO UN ERROR</p>}    
-            {data?.length === 0 && <p>LA CARPETA ESTA VACIA</p>}
+            {data?.length === 1 && <p>LA CARPETA ESTA VACIA</p>}
+            <div className="files-list rounded border">
+                {
+                    data?.length > 1 &&
+                        <table className="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Constancia <i className="bi bi-file-pdf"/></th>
+                                    <th>Opciones</th>
+                                </tr>
+                            </thead>
 
-            {
-                data?.length !== 0 &&
-                    <table className="table table-hover files-list">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Constancia <i className="bi bi-file-pdf"/></th>
-                                <th>Opciones</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                        {
-                            data?.map((f) => (
-                            
-                            <tr key={f.key}>
-                                <td>{f?.id}</td>
-                                <td>{f?.ruta}</td>
-                                <td>          
-                                    <button className="btn btn-info btn-sm me-1" onClick={(e) => handleDownload(e,f?.ruta)}>
-                                        <i className="bi bi-download"></i>
-                                    </button>
-
-                                    <button className="btn btn-danger btn-sm" onClick={(e) => handleDelete(e,f?.ruta)}>
-                                        <i className="bi bi-trash2"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            ))
-                        }
-                        </tbody>
-                    </table>
-                }
+                            <tbody>
+                            {
+                                data?.map((f) => (
+                                    f?.id !== "0000" &&
+                                    <tr key={f?.key} className="row-table">
+                                        <td>{f?.id}</td>
+                                        <td>{f?.ruta}</td>
+                                        <td><FileOptions path={f?.ruta}/></td>
+                                    </tr>
+                                ))
+                            }
+                            </tbody>
+                        </table>
+                    }
+             </div>
         </div>
     )
 }
