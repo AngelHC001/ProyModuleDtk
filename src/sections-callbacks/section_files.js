@@ -2,15 +2,16 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 const API_URL = import.meta.env.VITE_API_URL;
 
 export function useUploadCallbacks(uploadData){
-    const queryClient = new useQueryClient();
+    const queryClient = useQueryClient();
     const queryKey = ['uploads']
     
+    //lega como formData
     const uploadFile = useMutation({
         mutationFn: async(uploadData) => {
             const response = await fetch(`${API_URL}/s2_file_process.php`,{
                 method:'POST',
                 headers: {'Content-Type':'application/json'},
-                body: JSON.stringify(uploadData)
+                body: uploadData
             });
             
             return await response.json();
@@ -19,12 +20,11 @@ export function useUploadCallbacks(uploadData){
         onError: (err) => { console.error('ERROR AL SUBIR ARCHIVO', err.message) }
     });
 
-
     const eraseFile = useMutation({
         mutationFn: async(uploadData) => {
-            const response = await fetch(`${API_URL}/m2_file_process.php`,{
+            const response = await fetch(`${API_URL}/s2_file_process.php`,{
                 method:'DELETE',
-                body: JSON.stringify({path: uploadData.ruta})            
+                body: JSON.stringify({path: uploadData})            
             });
     
             return response.json();

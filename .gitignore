@@ -23,8 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-doc-point
 .env.development
 .env.production
-
-
+doc-point

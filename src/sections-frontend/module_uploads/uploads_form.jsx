@@ -1,16 +1,27 @@
-import React, {useRef, useState } from "react"
+import React, {useEffect, useRef, useState } from "react"
 import { useQuery } from "@tanstack/react-query";
 import { useView } from "../../components/viewContext";
+import { useUploadCallbacks } from "../../sections-callbacks/section_files";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
+
 function FileUploadForm(){
-    const { setActiveView } = useView();
+    const { activeView, setActiveView } = useView();
+    const { uploadMutation } = useUploadCallbacks();
     const selectRef = useRef();
 
     const thisYear = new Date().getFullYear().toString();
-    const [message, setMessage] = useState({text:'',alertColor:'alert-secondary'});
+    const [message, setMessage] = useState({text:'', alertColor:'alert-secondary'});
     const [folio, setFolio] = useState({sigla:'CCCC', num: 0, year:thisYear}); 
     const [file, setFile] = useState(null); 
+
+    useEffect(() => {
+        if(activeView.folder){
+            const selected = activeView.folder[0]; 
+            setFolio({sigla: selected.sigla, num:0, year: selected.year});
+        }
+    },[activeView.folder]);
 
     const handleChange = (e) =>{
         const {name, value} = e.target;
@@ -24,25 +35,23 @@ function FileUploadForm(){
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        //Contenedor
-        /*const formData = new FormData();
-        formData.append('sigla',folio.sigla);
-        formData.append('year',folio.year);
-        formData.append('num',num);
-       
-        if(file){
-            formData.append('docfile',file);
-        }
-        
-        const response = await DataProcess(formData);
-        if (response.success) {
-            Clear(e);
-            onUploadSuccess();
-            setMessage({text: response.message, alertColor:'alert-success'});
-        }
-        else{
-            setMessage({text: response.message, alertColor:'alert-danger'});
-        }*/
+        try{
+             const formData = new FormData();
+            formData.append('sigla',folio.sigla);
+            formData.append('num',folio.num);
+            formData.append('year',folio.year);
+            
+            if(file){
+                formData.append('docfile',file);
+            }   
+            
+            await uploadMutation.mutateAsync(formData);
+            handleClear();
+            setMessage({text: 'Archivo Subido', alertColor: 'alert-success'});
+        }catch(err){
+            console.log('ERROR AL SUBIR ARCHIVO ' +err.message);
+            setMessage({text: 'Algo salio mal', alertColor: 'alert-danger'});
+        }        
     }
  
     //Funcion Fetch
@@ -104,10 +113,12 @@ function FileUploadForm(){
                
                 <div className="input-group">
                     <label className="col-form-label me-2">Folio de Accesso: </label>
-                    <input name="sigla" className="form-control" type="text" value={folio.sigla} readOnly/>
+                    <input name="sigla" className="form-control" type="text" value={folio.sigla}  
+                       onChange={handleChange} readOnly/>
                     <input name="num" className="form-control" type="number" value={folio.num} min={1}
                        onChange={handleChange} required/>
-                    <input name="year" className="form-control" type="text" value={folio.year} readOnly/>
+                    <input name="year" className="form-control" type="text" value={folio.year} 
+                       onChange={handleChange} readOnly/>
                 </div>
 
                 <div className="d-flex justify-content-center gap-1">
