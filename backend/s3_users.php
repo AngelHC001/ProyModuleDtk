@@ -1,10 +1,10 @@
 <?php
-header("Access-Control-Allow-Origin: https://datametrika.com/module_upload/");
+require_once '../config.php';
+//require_once dirname(__DIR__, 3) . '/ProyDatametrika_docpoint/config.php';
+header("Access-Control-Allow-Origin: " . BASE_URL);
 header("Access-Control-Allow-Methods:  GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
-
-require_once dirname(__DIR__, 3) . '/ProyDatametrika_docpoint/config.php';
 
 function WriteJson(int $mode, $userData){
     //ExtraerJSON

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-
-const url = import.meta.env.VITE_API_URL;
+import { useUserCallbacks } from '../../sections-callbacks/section_users';
+const API_URL = import.meta.env.VITE_API_URL;
 
 /* COMPONENTES SEPARADOS */
 function FormHeader(){
@@ -12,64 +12,22 @@ function FormHeader(){
     )
 }
 
-/* LOGICA DEL BACKEND */
-const AddUser = async (nuevoData) => {
-    if(!nuevoData) return alert("Llena los campos");
-    const token = localStorage.getItem('token'); // Recuperamos la llave del bolsillo
-
-    try{
-        const response = await fetch(`${url}/m3_users.php`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': token //LLAVE
-            },
-            body: JSON.stringify({ username: nuevoData.username, password: nuevoData.password })
-        });
-
-        return await response.json();
-    }catch(err){
-        console.log('ALGO SALIO MAL',err);
-    }
-};
-
-
-const DeleteUser = async (userData) => {
-    if (!window.confirm("¿Seguro que quieres eliminar a este usuario? Esta acción es irreversible.")) {
-        return;
-    }
-   
-    try {
-        const token = localStorage.getItem('token'); // Recuperamos la llave del bolsillo
-        const response = await fetch(`${url}/m3_users.php`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': token
-            },
-            body: JSON.stringify({ id: userData.id, username: userData.username })
-        });
-        return await response.json();
-    } catch (error) {
-        console.error("Error de red:", error);
-    }
-};
-
 
 //-----------------------FORMULARIO REGISTROS-----------------------
-const ProcessUsers = ({onUser, onActionEnded}) => {
+const ProcessUsers = () => {
+  const { addUser } = useUserCallbacks();
   const [formData, setFormData] = useState({ id: 0, username:'' });
   const [message, setMessage] = useState({text: '', color: 'alert-secondary'})
 
-  useEffect(() => { 
-    return () => {onUser ? setFormData(onUser): setFormData({ id: 0, username:'' }); }
-  },[onUser]);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData,[name]: value });
+    setFormData((prev) => ({ ...prev,[name]: value }));
   };
 
+
+  /*
+  
+  
   const handleSubmit = async (e, tipoAccion) => {
     e.preventDefault();
     
@@ -104,7 +62,7 @@ const ProcessUsers = ({onUser, onActionEnded}) => {
         setFormData({ id:0, username:''})
     }
   };
-
+    */
   return (
     <div className="row mb-3">
         <div className="card border-0">
