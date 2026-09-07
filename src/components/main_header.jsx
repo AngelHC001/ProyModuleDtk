@@ -12,6 +12,7 @@ export function NavLink({route,name_site}){
     )
 }
 
+
 function ChartDiv({activation}){
     return(
         <div className={`bar-chart-effect ${activation}`}>

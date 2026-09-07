@@ -2,8 +2,20 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useView } from '../../components/viewContext';
 import { useUploadCallbacks } from "../../sections-callbacks/section_files";
+import { LoadingScreen, ErrorScreen, EmptyFolder } from "../../components/source_loading";
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+
+function ItemsPanel({children}){
+    return(
+        <div className="col-md-6 bg-light rounded shadow">
+            <h3 className="slogan">Documentos de la Carpeta</h3>
+            { children }
+        </div>
+    )
+}
+
 
 function FileOptions({path}){
     const { eraseFile } = useUploadCallbacks();
@@ -22,17 +34,10 @@ function FileOptions({path}){
     }
     
     return(
-        <div>
-            <a href='#' 
-                className="btn-member me-1">
-                <i className="bi bi-download"></i>
-            </a>
-           
-            <button className="btn btn-danger" type="button"
-            onClick={(e) => handleDelete(e, path)}>
-                <i className="bi bi-trash2"></i>
-            </button>
-        </div>
+        <button className="btn-member btn-alert" type="button"
+        onClick={(e) => handleDelete(e, path)}>
+            <i className="bi bi-trash2"></i>
+        </button>
     )
 }
 
@@ -64,47 +69,51 @@ function FilesUploaded(){
 
     if(!activeView.folder){
         return(
-            <div className="col-md-4">
-                 <h3 className="slogan">Selecciona una carpeta para visualizar</h3>
+            <div className="col-md-4 d-flex align-items-center">
+                <div className="card border-2 p-2 slogan">
+                    <h2 className="card-title">Selecciona una carpeta para visualizar</h2>
+                    <div className="card-body">
+                          <i className="display-2 bi bi-folder-symlink"/>
+                    </div>
+                </div>
             </div>
         )
     }
     
     return(
-        <div className="col-md-6 bg-light rounded shadow">
-            <h3 className="slogan">Documentos de la Carpeta</h3>
+        <ItemsPanel>
             <h6 className="slogan">{activeView?.folder[0].name} - {activeView?.folder[0].year}</h6>
-            {isPending && <p>CARGANDO DATOS</p>}
-            {isError && <p>OCURRIO UN ERROR</p>}    
-            {data?.length === 1 && <p>LA CARPETA ESTA VACIA</p>}
-            <div className="files-list rounded border">
-                {
-                    data?.length > 1 &&
-                        <table className="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Constancia <i className="bi bi-file-pdf"/></th>
-                                    <th>Opciones</th>
-                                </tr>
-                            </thead>
+            {
+                isPending ? <LoadingScreen/> :
+                    isError ? <ErrorScreen/> :
+                        data?.length === 1 ? <EmptyFolder/> :
 
-                            <tbody>
-                            {
-                                data?.map((f) => (
-                                    f?.id !== "0000" &&
-                                    <tr key={f?.key} className="row-table">
-                                        <td>{f?.id}</td>
-                                        <td>{f?.ruta}</td>
-                                        <td><FileOptions path={f?.ruta}/></td>
+                        <div className="items-table rounded">
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Constancia <i className="bi bi-file-pdf"/></th>
+                                        <th>Opciones</th>
                                     </tr>
-                                ))
-                            }
-                            </tbody>
-                        </table>
-                    }
-             </div>
-        </div>
+                                </thead>
+
+                                <tbody>
+                                {
+                                    data?.map((f) => (
+                                        f?.id !== "0000" &&
+                                        <tr key={f?.key} className="row-table">
+                                            <td>{f?.id}</td>
+                                            <td>{f?.ruta}</td>
+                                            <td><FileOptions path={f?.ruta}/></td>
+                                        </tr>
+                                    ))
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                }   
+        </ItemsPanel>
     )
 }
 
