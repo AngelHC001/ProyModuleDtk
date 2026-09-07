@@ -3,7 +3,7 @@ import { useUserCallbacks } from '../../sections-callbacks/section_users';
 
 function FormHeader(){
     return(
-        <div className="card-header bg-theme-2 user-profile text-light">
+        <div className="card-header bg-theme user-profile text-light">
             <i className='bi bi-person-lines-fill fs-4 me-1'/>
             <h5 className="mb-0">Configurar Usuario</h5>
         </div>   

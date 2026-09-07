@@ -1,10 +1,26 @@
 import React from "react";
-import {useView} from '../../components/viewContext.jsx';
 import { useQuery } from "@tanstack/react-query";
+import { useUserCallbacks } from "../../sections-callbacks/section_users.js";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Users(){
+    const { deleteUser } = useUserCallbacks();
+
+    const handleDelete = async(e,userData) => {
+        e.preventDefault();
+        if(!confirm('¿Borrar este usuario?')){ return; }
+
+        try {
+            await deleteUser.mutateAsync(userData);
+            alert('Usuario Eliminado');
+        } catch (error) {
+            console.error(error.message);
+            alert('Ocurrio un error al borrar usuario');
+        }
+
+    }
+
 
     const {data, isPending, isError} = useQuery({
         queryKey: ['users'],
@@ -23,7 +39,7 @@ export default function Users(){
 
     return(
         <div className="col-md-5 bg-light rounded shadow p-2">
-            <h2 className="slogan-2">Usuarios Registrados</h2>
+            <h2 className="slogan">Usuarios Registrados</h2>
             <div className="rounded p-3">
                 {isPending && <p>CARGANDO DATOS</p>}
                 {isError && <p>OCURRIO UN ERROR</p>}
@@ -34,7 +50,16 @@ export default function Users(){
                             {
                                 data?.map((user) => (
                                     <li key={user.id} className="list-group-item user-item"> 
-                                        {user.name} </li>))
+                                        <span className="me-5">
+                                            {user.name} 
+                                        </span>
+
+                                        <button className="btn btn-danger" type="button"
+                                            onClick={(e) => handleDelete(e,user)}>
+                                            <i className="bi bi-trash2"/>
+                                        </button>
+                                    </li>
+                                ))
                             }
                         </ul>       
                     }
