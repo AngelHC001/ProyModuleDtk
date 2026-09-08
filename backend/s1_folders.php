@@ -14,62 +14,64 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false); 
 header("Pragma: no-cache"); // Para compatibilidad con HTTP 1.0
 
+define('DIRECTORY_FILE', DOC_PATH . "directory.json");
+
+//EXTRAER JSON DEL DIRECTORIO
+function GetDirectoryJSON(){
+    if(!file_exists(DIRECTORY_FILE)){ return [];}
+    
+    $content = file_get_contents(DIRECTORY_FILE); 
+    $data = json_decode($content, true);
+    return is_array($data) ? $data : [];
+}
+
+function CheckData($idToFind){
+    $json_data = GetDirectoryJSON();
+
+    foreach($json_data as $item){
+        if((string)$item['id'] === (string)$idToFind){
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 
 //ESCRIBIR DIRECTORIO GENERAL JSON PARA QUE LO LEA LA PAGINA PRINCIPAL
 function WriteJson($mode, $folderData){
-    $json_main = DOC_PATH . "directory.json"; //docpoint/directory
-    if(!file_exists($json_main)){ return false; }
-    
-    //Extraer JSON
-    $json = file_get_contents($json_main); 
-    $data = json_decode($json, true);
-    if(!$data){ return false; }
+    $json_data = GetDirectoryJSON();
 
-    //MODE = 1 PUSH
-    if($mode === 1 && count($folderData) === 5){
+    //MODE PUSH
+    if($mode === 1 && count($folderData) === 4){
         $newItem = [
-            "key" => $folderData[0],
-            "id" => intval($folderData[1]),
-            "sigla" => $folderData[2],
-            "name" => $folderData[3],
-            "year" => $folderData[4],
+            "key" =>  bin2hex(random_bytes(8)),  // Genera una cadena de 16 caracteres alfanuméricos únicos
+            "id" => intval($folderData[0]),
+            "sigla" => strtoupper($folderData[1]),
+            "name" => $folderData[2],
+            "year" => $folderData[3],
         ];
 
-        //AGREGAR NUEVOS DATOS
-        array_push($data,$newItem);        
-        $newData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-       
-        // MODIFICAR Directory.json;
-        if (file_put_contents($json_main, $newData)) {
-            return true;
-        }
-        else{
-            return false;
-        }
+        array_push($json_data,$newItem);        
     }
-    else ////MODE = 0 POP
+    else if($mode === 0 && count($folderData) === 1) //MODE = 0 POP BORRAR POR ID
     {
-        if(count($folderData) !== 1) { return false; }
-        
-        //BORRAR POR ID
-        $attrTarget = $folderData[0];  
-        
-        if(is_array($data)){
-            $newData = array_filter($data,function ($item) use($attrTarget){
-                return $item['id'] !== $attrTarget;
-            });
-        }
+        $attrTarget = $folderData[0]; 
+        //REASIGNAR VALORES
+        $json_data = array_filter($json_data,function ($item) use($attrTarget){
+                                    return (string)$item['id'] !== (string)$attrTarget;});
 
-        //GUARDAR CAMBIOS
-        $newData = array_values($newData);
-        $newData = json_encode($newData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        if (file_put_contents($json_main, $newData)) {
-            return true;
-        }
-        else{
-            return false;
-        }
-    }//if 0
+        $json_data = array_values($json_data);
+    }
+    else{
+        return false;
+    }
+
+    //GUARDAR CAMBIOS
+    $newData = json_encode($json_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    $bytesWritten = file_put_contents(DIRECTORY_FILE, $newData); 
+    return $bytesWritten !== false;
 }
 
 
@@ -83,24 +85,24 @@ function CreateFolder(string $carpetaCurso){
     try{
         if (!is_dir(CERT_PATH)) { return false; }
 
-        //PREPARAR VALORES
+        //PREPARAR VALORES DEFAULT
         $key = bin2hex(random_bytes(8));
         $default = [["key" => $key, "id" => "0000",  "ruta" => "curso/archivo.pdf"]];
         $json_data = json_encode($default, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-        //PROCESAR CARPETA VACIA EN CERTIFICADOS/
+        //CREAR CARPETA VACIA EN CERTIFICADOS/
         if (!mkdir($folderDir, $permisos, true) && $json_data) {
             return ["success" => false, "message" => "No se pudo crear la carpeta"];   
         }
 
-        //PROCESAR JSON EN DIRECTORIOS/
+        //CREAR JSON EN DIRECTORIOS/
         if (!file_put_contents($jsonDir, $json_data)) {
             return ["success" => false, "message" => "No se pudo escribir el archivo $jsonDir"];  
         }
 
         return true;
     }catch(Exception $ex){
-        return ["sucess" => false, "message" => "FALLO EN CREAR CARPETA $ex"];
+        return ["sucess" => false, "message" => "FALLO EN CREAR CARPETA " . $ex -> getMessage()];
     }
 }
 
@@ -129,18 +131,14 @@ function EraseFolder(string $carpetaCurso) {
         try {
             unlink($jsonTarget);
         } catch (Exception $e) {
-            return ["success" => false, "message" => "ERROR AL BORRAR $e"];
+            return ["success" => false, "message" => "ERROR AL BORRAR " . $e -> getMessage()];
         }
     }
 
     //BORRAR FOLDER Y CONTENIDOS
     if(is_dir($folderTarget)){
         try {
-            if (rmdir_recursive($folderTarget)) {
-                return true;
-            } else {
-                return false;
-            }
+            return rmdir_recursive($folderTarget);
         } catch (Exception $e) {
             return ["success" => false, "message" => "ERROR AL BORRAR CONTENIDO: " . $e->getMessage()];
         }
@@ -149,16 +147,6 @@ function EraseFolder(string $carpetaCurso) {
 
 
 class CoursesController {
-    //VER DIRECTORIO JSON    
-    public function GetCourses(){
-        $json = file_get_contents(DOC_PATH . 'directory.json');
-        $datos = json_decode($json, true);
-        if (!$datos) { 
-            return ["success" => false , "message" => "No existe el directorio general"]; 
-        }
-        return $datos;
-    }
-
     //INSERT
     public function InsertCourse(){
         //Capturar el JSON que envía React
@@ -169,28 +157,32 @@ class CoursesController {
         }
 
         //Extraer credenciales (STATE DE REACT)
-        $id = $datos['id'] ?? '';
+        $id =  $datos['id'] ?? '';
         $sigla = $datos['sigla'] ?? '';
         $nombre = $datos['name'] ?? ''; 
         $year = $datos['year'] ?? '';
-        $key = bin2hex(random_bytes(8));  // Genera una cadena de 16 caracteres alfanuméricos únicos
 
         if (empty($id) || empty($nombre) || empty($sigla) || empty($year)) {
             return ["success" => false, "message" => "Faltan campos obligatorios para procesar el curso"];
         }
 
-        $nombreCarpeta = $year . "_" . $sigla;
+        //COMPROBAR EXISTENTE
+        if(CheckData($id)){
+            return ["success" => false, "message" => "YA EXISTE UNA CARPETA CON ESTE ID"];
+        }
+
         //PROCESO CREAR CARPETA
+        $nombreCarpeta = $year . "_" . $sigla;
         if(!CreateFolder($nombreCarpeta)){
-            return ["success" => false, "message" => "ERROR AL CREAR CARPETA"];
+            return ["success" => false, "message" => "ERROR AL CREAR CARPETA (CREATE FOLDER)"];
         }
 
         //PROCESO ESCRIBIR JSON
-        if(!WriteJson(1 , [$key,$id,$sigla,$nombre,$year])){
-            return ["success" => false, "message" => "ERROR AL REGISTRAR EL CURSO"];
+        if(!WriteJson(1 , [$id,$sigla,$nombre,$year])){
+            return ["success" => false, "message" => "ERROR AL CREAR CARPETA (WRITE JSON)"];
         }
 
-        return ["success" => true, "message" => "CARPETA  $nombreCarpeta CREADA"];
+        return ["success" => true, "message" => "CARPETA $nombreCarpeta CREADA"];
     }
     
     //DELETE
@@ -211,7 +203,6 @@ class CoursesController {
             return ["success" => false, "message" => "No hay suficientes datos para procesar"];
         }
 
-       
         //PROCESSO BORRAR FOLDER
         if(!EraseFolder($folderTarget)){
             return ["success" => false, "message" => "No se pudo eliminar la carpeta"];    
@@ -236,7 +227,7 @@ try
             exit();
 
         case 'GET':
-            echo json_encode($controller->GetCourses());
+            echo json_encode(GetDirectoryJSON());
             break;
 
         case 'POST':

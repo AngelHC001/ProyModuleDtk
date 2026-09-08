@@ -13,36 +13,42 @@ export function useFolderCallback(folderData) {
 
     //Funcion para crear folder
     const createFolder = useMutation({
-        mutationFn: async function (folderData) {
+        mutationFn: async (folderData) => {
             const response = await fetch(`${API_URL}/s1_folders.php`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(folderData)
             });
-            
-            console.log(response.json());
-            
-            //return response.json();       
+
+            if(!response.ok || response.success === false){
+                const errorText = await response.text();
+                throw new Error(errorText || 'Error en el servidor');
+            }
+
+            return response.json();       
         },
-
         onSuccess: () => { queryClient.invalidateQueries({queryKey}) },
-
         onError: (err) => { console.error("Error al crear folder", err.message) }
     });
 
     //Funcion para Borrar
     const deleteFolder = useMutation({
-        mutationFn: async function (folderData) {
+        mutationFn: async (folderData) => {
             const response = await fetch(`${API_URL}/s1_folders.php`, { 
                 method: 'DELETE', 
                 headers: { 'Content-Type': 'application/json'},
                 body: JSON.stringify(folderData)
             });
+            
+            if(!response.ok || response.success === false){
+                const errorText = await response.text();
+                throw new Error(errorText || 'Error en el servidor');
+            }
 
             return response.json();   
         },
         onSuccess: () => {queryClient.invalidateQueries({queryKey})},
-        onError: () => {console.error("Error al crear folder")}
+        onError: (err) => { console.error("Error al borrar el folder", err.message); }
     });
 
     return {createFolder, deleteFolder}

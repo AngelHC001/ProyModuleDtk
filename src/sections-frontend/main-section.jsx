@@ -1,4 +1,4 @@
-import React,{useContext, useState} from "react";
+import React,{ useContext } from "react";
 
 import { ViewContext } from "../components/viewContext";
 
@@ -21,7 +21,7 @@ function UploadsModule(){
         <ContainerFluid>      
             <h1 className="text-center p-2 slogan-2">Gestión de Constancias y Certificados</h1>
             
-            <div className="bg-white shadow-lg rounded overflow-hidden">
+            <div className="rounded overflow-hidden">
                
                     <div className="nav-banner flex-wrap justify-content-center">
                         {TABS_CONFIG.map((tab) => (
@@ -42,7 +42,6 @@ function UploadsModule(){
                         </div>
                     </div>
                
-
                 {/* Área de Contenido Dinámico */} 
                 <div className="p-2">
                     {activeView.type === 'folders' && <ModuleOne/>}
