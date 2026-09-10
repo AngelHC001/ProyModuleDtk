@@ -159,7 +159,7 @@ try {
     }
 
 } catch (Throwable $th) {
-    echo json_encode(["message"=> $th]);
+    echo json_encode(["success" => false, "message"=> $th -> getMessage()]);
 }
 
 ?>

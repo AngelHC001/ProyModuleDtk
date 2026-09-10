@@ -19,7 +19,10 @@ function NewUserSection(){
         e.preventDefault();
         
         addUser.mutate({username: username},{
-            onSuccess: (data) => { alert(data.message); },
+            onSuccess: (data) => { 
+                setUserName('');
+                alert(data.message); 
+            },
             onError: (error) => {
                 console.error(error.message);
                 alert('ERROR AL INSERTAR USUARIO ', error.message);
@@ -50,6 +53,8 @@ function NewUserSection(){
 
 
 function PasswordSection () {
+    const { changePassword } = useUserCallbacks();
+    const [showPassword, setShowPassword] = useState(false);
     const [newPass, setNewPass] = useState({pass1: '', pass2: ''});
 
     const handleChange = (e) => {
@@ -57,33 +62,50 @@ function PasswordSection () {
         setNewPass((prev) => ({ ...prev, [name]: value }));
     };
 
+    const togglePassword = () =>{
+        setShowPassword(!showPassword);
+    }
+
     const handleClear = () => {
         setNewPass({ pass1: '', pass2: '' });
     }
    
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if(newPass.pass1 !== newPass.pass2){
+            alert('Las contraseñas no coinciden');
+            return;
+        }
 
-        //query
-        return;
+        changePassword.mutate(newPass,{
+            onSuccess: (data) => {
+                handleClear();
+                alert(data.message);
+            },
+            onError: (error) => {
+                alert(error.message);
+            }
+        });
     }
 
     return(
         <form className='d-flex flex-column gap-2 px-3' onSubmit={handleSubmit}>
             <div className="input-group">
                 <label className="col-form-label me-1">Contraseña Actual: </label>
-                <input type="password" className="form-control" name="pass1"
-                    onChange={handleChange} value={newPass.pass1} required />
+                <input className="form-control" name="pass1" value={newPass.pass1} 
+                    type={showPassword ? 'text' : 'password'} 
+                    onChange={handleChange}  required />
             </div>
 
             <div className="input-group">
                 <label className="col-form-label me-1">Contraseña Nueva: </label>
-                <input type="password" className="form-control" name="pass2"
-                    onChange={handleChange} value={newPass.pass2} required />
+                <input className="form-control" name="pass2" value={newPass.pass2} 
+                    type={showPassword ? 'text' : 'password'}
+                    onChange={handleChange} required />
             </div>
 
             <div className='d-flex justify-content-center gap-1'>
-                <button type="button" className="btn-member" onClick={handleClear}>
+                <button type="button" className="btn-member" onClick={togglePassword}>
                     <i className="bi bi-eye"/>
                 </button>
 
