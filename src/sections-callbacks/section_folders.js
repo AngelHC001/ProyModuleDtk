@@ -20,15 +20,16 @@ export function useFolderCallback(folderData) {
                 body: JSON.stringify(folderData)
             });
 
+            const data = await response.json();
+
             if(!response.ok || response.success === false){
-                const errorText = await response.text();
-                throw new Error(errorText || 'Error en el servidor');
+                throw new Error(data.message || 'Error en el servidor');
             }
 
-            return response.json();       
+            return data;       
         },
         onSuccess: () => { queryClient.invalidateQueries({queryKey}) },
-        onError: (err) => { console.error("Error al crear folder", err.message) }
+        onError: (error) => { console.error("Error al crear folder", error.message) }
     });
 
     //Funcion para Borrar
@@ -48,7 +49,7 @@ export function useFolderCallback(folderData) {
             return response.json();   
         },
         onSuccess: () => {queryClient.invalidateQueries({queryKey})},
-        onError: (err) => { console.error("Error al borrar el folder", err.message); }
+        onError: (error) => { console.error("Error al borrar el folder", error.message); }
     });
 
     return {createFolder, deleteFolder}

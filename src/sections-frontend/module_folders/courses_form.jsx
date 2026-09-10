@@ -19,7 +19,6 @@ const CoursesForm = () => {
 
   const handleSubmit = async(e) => {
     e.preventDefault();
-    
     createFolder.mutate(folderData,{
       onSuccess: () => {
         handleClear();
@@ -27,7 +26,7 @@ const CoursesForm = () => {
       },
       onError: (error) => {
         console.error(error.message);
-        setMessage({text: 'Algo salio mal', alert_mode: 'danger'});
+        setMessage({text: error.message, alert_mode: 'danger'});
       }
     });
   }

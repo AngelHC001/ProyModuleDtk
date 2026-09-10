@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState } from "react"
 import { useQuery } from "@tanstack/react-query";
 import { useView } from "../../components/viewContext";
 import { useUploadCallbacks } from "../../sections-callbacks/section_files";
+import { LoadingScreen, ErrorScreen } from "../../components/source_loading";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -15,6 +16,7 @@ function FileUploadForm(){
     const [message, setMessage] = useState({text:'', alertColor:'alert-secondary'});
     const [folio, setFolio] = useState({sigla:'CCCC', num: 1, year:thisYear}); 
     const [file, setFile] = useState(null); 
+    const fileInputRef = useRef();
 
     useEffect(() => {
         if(activeView.folder){
@@ -29,8 +31,10 @@ function FileUploadForm(){
     }
 
     const handleClear = () => {
-        setFolio({ sigla:'CCCC', num: 1, year:thisYear });
         setFile(null);
+        if(fileInputRef.current){
+            fileInputRef.current.value = "";
+        }
     }
 
     const handleSubmit = async (e) => {
@@ -89,27 +93,33 @@ function FileUploadForm(){
             <form onSubmit={handleSubmit} encType="multipart/form-data" className="d-flex flex-column gap-3">
                 <div className="input-group">
                     <label className="col-form-label me-2">Elegir Carpeta: </label>
-                        {isPending && <p>CARGANDO DATOS</p>}
-                        {isError && <p>OCURRIO UN ERROR</p>}
                         {
-                            data?.length !== 0 &&   
-                            <select className="form-select" size={3} ref={selectRef}>
-                                {
-                                    data?.map((folder) => (
-                                        folder?.id !== 9999 &&
-                                        <option key={folder?.key} value={`${folder?.year}_${folder?.sigla}`}> 
-                                            {folder.year}-{folder.sigla}
-                                        </option>
-                                ))}
-                            </select>
+                            isPending ? <LoadingScreen/> :
+                                isError ? <ErrorScreen/> :
+                                    data?.length !== 0 &&   
+                                    <select className="form-select" size={3} ref={selectRef}>
+                                    {
+                                        data?.map((folder) => (
+                                            folder?.id !== 9999 &&
+                                            <option key={folder?.key} value={`${folder?.year}_${folder?.sigla}`}> 
+                                                {folder.year}-{folder.sigla}
+                                            </option>
+                                    ))}
+                                    </select>
                         }
                     <button className="btn-member" type="button" onClick={handleOpenFolder}>
                         <i className="fs-4 bi bi-folder-fill me-1"/>Abrir
                     </button>
                 </div>
-
-                <input className="form-control" type="file" accept=".pdf,.png,.jpg" 
+                
+                <div className="input-group">
+                    <input ref={fileInputRef} className="form-control" type="file" accept=".pdf,.png,.jpg" 
                     onChange={(e) => setFile(e.target.files[0])} required/>
+
+                    <button className="btn-member" type="button" onClick={handleClear}>
+                        <i className="bi  bi-arrow-counterclockwise me-1"/>Cancelar
+                    </button> 
+                </div>
                
                 <div className="input-group">
                     <label className="col-form-label me-2">Folio de Accesso: </label>
@@ -120,17 +130,10 @@ function FileUploadForm(){
                     <input name="year" className="form-control" type="text" value={folio.year} 
                        onChange={handleChange} readOnly/>
                 </div>
-
-                <div className="d-flex justify-content-center gap-1">
-                    <button className="btn-member" type="button" onClick={handleClear}>
-                        <i className="bi  bi-arrow-counterclockwise me-1"/>Cancelar
-                    </button>     
-                    <button className="btn-member" type="submit">
-                        <i className="bi bi-upload me-1"/> Subir Archivo
-                    </button>
-                </div>
-
-                {/* <ProgressBar progress={}/> */}
+       
+                <button className="btn-member" type="submit">
+                    <i className="bi bi-upload me-1"/> Subir Archivo
+                </button>                
             </form>
         </div>
     )
