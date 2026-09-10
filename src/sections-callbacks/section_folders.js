@@ -6,7 +6,6 @@ const API_URL = import.meta.env.VITE_API_URL;
 /* LLAMADAS A API DE LA SECCION 1: CREAR CARPETA */
 export function useFolderCallback(folderData) {
     const queryClient = useQueryClient();
-    //const { activeView } = useView();
     //const {user} = useAuth();
 
     const queryKey = ['folders'];
@@ -19,11 +18,10 @@ export function useFolderCallback(folderData) {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(folderData)
             });
-
+            
             const data = await response.json();
-
-            if(!response.ok || response.success === false){
-                throw new Error(data.message || 'Error en el servidor');
+            if (!response.ok || data.success === false) {
+                throw new Error(data.message || 'Error al procesar la solicitud');
             }
 
             return data;       
@@ -41,12 +39,11 @@ export function useFolderCallback(folderData) {
                 body: JSON.stringify(folderData)
             });
             
-            if(!response.ok || response.success === false){
-                const errorText = await response.text();
-                throw new Error(errorText || 'Error en el servidor');
+            const data = await response.json();
+            if (!response.ok || data.success === false) {
+                throw new Error(data.message || 'Error al procesar la solicitud');
             }
-
-            return response.json();   
+            return data;
         },
         onSuccess: () => {queryClient.invalidateQueries({queryKey})},
         onError: (error) => { console.error("Error al borrar el folder", error.message); }

@@ -1,10 +1,8 @@
 import React, { useState}from "react";
 import { useFolderCallback } from "../../sections-callbacks/section_folders";
 
-//-----------------FORMULARIO--------------------
-
 const CoursesForm = () => {
-  const [message, setMessage] = useState({text:'',alert_mode:'secondary'}); //mode success - danger - none
+  const [message, setMessage] = useState({text:'', color:' '});
   const [folderData, setFolderData] = useState({ id: '', sigla: '', name: '',year: ''});
   const { createFolder } = useFolderCallback();
   
@@ -14,19 +12,20 @@ const CoursesForm = () => {
   }
   
   const handleClear = () => {   
+    setMessage({text: '', color: ''})
     setFolderData({ id: '', sigla: '' , name: '', year: '' });
   }
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     createFolder.mutate(folderData,{
-      onSuccess: () => {
+      onSuccess: (data) => {
         handleClear();
-        setMessage({text: 'Folder Creado', alert_mode: 'success'});
+        setMessage({text: data.message, color: 'success'});
       },
       onError: (error) => {
         console.error(error.message);
-        setMessage({text: error.message, alert_mode: 'danger'});
+        setMessage({text: error.message, color: 'danger'});
       }
     });
   }
@@ -36,7 +35,7 @@ const CoursesForm = () => {
         <h2 className="slogan-2">Crear Nueva Carpeta</h2>
         {
           message.text !== '' && 
-            <div className={`alert alert-${message.alert_mode}`} role="alert">
+            <div className={`alert alert-${message.color}`} role="alert">
                 {message.text}
             </div>
         }

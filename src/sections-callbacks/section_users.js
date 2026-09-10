@@ -17,7 +17,7 @@ export function useUserCallbacks(userData){
             return response.json();
         },
         onSuccess: () => { queryClient.invalidateQueries(queryKey) },
-        onError: (err) => { console.error('Algo salio mal (User) ' + err.message)}
+        onError: (error) => { console.error('Algo salio mal (User) ' + error.message)}
     });
 
     const deleteUser = useMutation({

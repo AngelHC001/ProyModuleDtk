@@ -78,13 +78,13 @@ function WriteJson($mode, $folderData){
 
 //CREA CARPETA PARA ARCHIVOS Y JSON PARA LECTURA DE QR
 function CreateFolder(string $carpetaCurso){
+    if (!is_dir(CERT_PATH)) { return false; }    
+
     $folderDir = CERT_PATH . $carpetaCurso;
     $jsonDir = DIRS_PATH . $carpetaCurso.".json";
     $permisos = 0755;    
 
     try{
-        if (!is_dir(CERT_PATH)) { return false; }
-
         //PREPARAR VALORES DEFAULT
         $key = bin2hex(random_bytes(8));
         $default = [["key" => $key, "id" => "0000",  "ruta" => "curso/archivo.pdf"]];
@@ -172,7 +172,7 @@ class CoursesController {
         }
 
         //PROCESO CREAR CARPETA
-        $nombreCarpeta = $year . "_" . $sigla;
+        $nombreCarpeta = strtoupper($year . "_" . $sigla);
         if(!CreateFolder($nombreCarpeta)){
             return ["success" => false, "message" => "ERROR AL CREAR CARPETA (CREATE FOLDER)"];
         }
