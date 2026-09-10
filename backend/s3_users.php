@@ -6,60 +6,50 @@ header("Access-Control-Allow-Methods:  GET, POST, PUT, DELETE");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
+define('USERS_DOC', DOC_PATH . "users.json");
+
+//AUXILIAR GENERAL
+function getUsers(){
+    if(!file_exists(USERS_DOC)){ return []; }
+
+    $content = file_get_contents(USERS_DOC);
+    $data = json_decode($content, true);
+    return is_array($data) ? $data : [];
+}
+
+//SOLO HASTA 10 USUARIOS
+function checkUsersLimit(){
+    $users = getUsers();
+    return count($users); 
+}
+
 function WriteJson(int $mode, $userData){
     //ExtraerJSON
-    $jsonPath = DOC_PATH . "users.json";
-    $jsonDoc = file_get_contents($jsonPath);
-    $data = json_decode($jsonDoc, true);
-    
-    if(!$data){ return false; }
+    $users = getUsers();
 
     //MODE 1 => PUSH
     if($mode === 1 && count($userData) === 3){
-        //CREAR NUEVO ITEM
-        $jsonItem = ["id" => $userData[0],"name" => $userData[1], "pass" => $userData[2]]; 
-        array_push($data,$jsonItem);        
-        $newData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-       
-        // GUARDAR CAMBIOS
-        if (file_put_contents($jsonPath, $newData) === false) { return false; }
-        return true;
+        $jsonItem = ["id" => $userData[0] ,"name" => $userData[1], "pass" => $userData[2]]; 
+        array_push($users,$jsonItem);        
     }
-    else //MODE 0 => POP
+    else if(count($userData) === 1)  //MODE 0 => POP, POR ID
     {
-        //BORRAR POR ID Y NOMBRE
-        if(count($userData) !== 1) { return false; }
         $userID = $userData[0];
-      
-        if(is_array($data)){
-            $newData = array_filter($data,function ($item) use($userID){
-                return $item['id'] !== $userID;
-            });
-        }
-
+        $users = array_filter($users, function ($item) use($userID){ 
+                                            return (string)$item['id'] !== (string)$userID;});
+        $users = array_values($users);   
+    }
+    else{
+        return false;
+    }
         //GUARDAR CAMBIOS 
-        $newData = array_values($newData);
-        $process = file_put_contents($jsonPath, json_encode($newData,JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));  
-        //file_put dio falso
-        if ($process === false) { return false; }
-        return true;
-    }//if
+        $newData = json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $bytesWritten = file_put_contents(USERS_DOC, $newData);
+        return $bytesWritten !== false;
 }
 
 
 class UsuarioController {
-    //Devolver json con los datos
-    public function GetUsers(){
-        $jsonPath = DOC_PATH . "users.json";
-        if(!is_file($jsonPath)){
-            return ["success" => false, "message" => "ALGO SALIO MAL"];
-        }
-
-        //EXTRAER ARCHIVO
-        $jsonFile = file_get_contents($jsonPath);      
-        return json_decode($jsonFile, true);
-    }
-
     //INSERT
     public function InsertUser(){
         $json = file_get_contents('php://input'); //CHECAR
@@ -67,11 +57,16 @@ class UsuarioController {
 
         if (!$datos) { return ["success" => false, "message" => "SE RECIBIERON DATOS INVALIDOS"]; }
 
-        //Extraer credenciales
+        //DIO SEÑAL DE QUE LLEGO A 10
+        if(checkUsersLimit() === 10){
+            return ["success" => false, "message" => "LIMITE DE USUARIOS ALCANZADO (10)"];
+        }
+
+        //Extraer credenciales con PassDefault
         $id = random_int(1000,10000);
         $user = $datos['username'] ?? '';
-        $hashed = password_hash(DTMK_PASS,PASSWORD_DEFAULT);  //CREAR PASS DEFAULT
-       
+        $hashed = password_hash(DTMK_PASS,PASSWORD_DEFAULT);
+
         //id,user,hashed
         if(!WriteJson(1,[$id,$user,$hashed])){
             return ["success" => false, "message" => "ERROR AL INSERTAR USUARIO"];
@@ -86,13 +81,13 @@ class UsuarioController {
         $datos = json_decode($json, true);
         if (!$datos) { return ["success" => false, "message" => "SE RECIBIERON DATOS INVALIDOS"]; }
 
-        //Extraer credenciales
-        $id = $datos['id'] ?? '';
-
-        if(!WriteJson(0,[$id])){
-            return ["success" => false, "message" => "ALGO SALIO MAL"];
+        if(checkUsersLimit() === 3 ){
+            return ["success" => false, "message" => "LIMITE MINIMO DE USUARIOS (3)"];
         }
 
+        //Extraer credenciales
+        $id = $datos['id'] ?? '';
+        if(!WriteJson(0,[$id])){ return ["success" => false, "message" => "ALGO SALIO MAL"];}
         return ["success" => true, "message" => "USUARIO ELIMINADO"];
     }
 
@@ -147,7 +142,7 @@ try {
     $controller = new UsuarioController();
     switch($_SERVER['REQUEST_METHOD']){
         case 'GET':
-            echo json_encode($controller->GetUsers());
+            echo json_encode(getUsers());
             break;
 
         case 'POST':

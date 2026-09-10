@@ -34,36 +34,27 @@ export function useUserCallbacks(userData){
         onError: (err) => {console.error('Algo salio mal (User) ' + err.message)}
     });
 
-    /**
-     * /*
-const userOnline = localStorage.getItem('user'); //LLAVE DE SESION
-const userID = localStorage.getItem('id');
-const url = import.meta.env.VITE_API_URL;
+    const changePassword = useMutation({
+        mutationFn: async(userData) => {
+            const response = await fetch(`${API_URL}/s3_users.php`,{ 
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData)
+            });
 
-const ChangeRequest = async (formData) => {
-    try{
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${url}/m3_users.php`,{ 
-            method: 'PUT',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': token
-            },
-            body: JSON.stringify({ 
-                id: userID, 
-                username: formData.username, 
-                currentPassword: formData.currentPassword,
-                newPassword: formData.newPassword
-            })
-        });
+            const data = await response.json();
+            if(!response.ok || data.success === false){
+                const errText = data.text();
+                throw new Error("Error al cambiar contraseña ",errText);
+            }
+            
+            return data; 
+        },
+        onSuccess: () => {queryClient.invalidateQueries(queryKey)},
+        onError: (err) => {console.error('Algo salio mal (User) ' + err.message)}
+    });
 
-        return await response.json();
-    }catch(err){
-        return await err.json();
-    }   
-}
-
-     */
-
-    return {addUser, deleteUser};
+    return {addUser, deleteUser, changePassword};
 }

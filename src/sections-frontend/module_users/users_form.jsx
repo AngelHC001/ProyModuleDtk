@@ -18,14 +18,13 @@ function NewUserSection(){
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        try {
-            await addUser.mutateAsync({username: username});
-            setUserName('');
-            alert('Usuario Insertado');
-        } catch (error) {
-            console.error(error.message);
-            alert('ERROR AL INSERTAR USUARIO');
-        }
+        addUser.mutate({username: username},{
+            onSuccess: (data) => { alert(data.message); },
+            onError: (error) => {
+                console.error(error.message);
+                alert('ERROR AL INSERTAR USUARIO ', error.message);
+            }
+        });
     };        
     
     return (

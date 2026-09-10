@@ -23,18 +23,17 @@ export default function Users(){
         e.preventDefault();
         if(!confirm('¿Borrar este usuario?')){ return; }
 
-        try {
-            await deleteUser.mutateAsync(userData);
-            alert('Usuario Eliminado');
-        } catch (error) {
-            console.error(error.message);
-            alert('Ocurrio un error al borrar usuario');
-        }
-
+        deleteUser.mutate(userData,{
+            onSuccess: (data) => { alert(data.message); },
+            onError: (error) => {
+                console.error(error.message);
+                alert(error.message);
+            }
+        });
     }
 
 
-    const {data, isPending, isError} = useQuery({
+    const { data, isPending, isError } = useQuery({
         queryKey: ['users'],
         queryFn: async({signal}) => {
             const response = await fetch(`${API_URL}/s3_users.php`, {
