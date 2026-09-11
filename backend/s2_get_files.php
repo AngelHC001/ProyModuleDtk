@@ -38,7 +38,7 @@ function GetFiles(){
 try 
 {
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
-        echo json_encode(GetFiles(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        echo json_encode(GetFiles(), JSON_PRETTY_PRINT, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 } catch (Exception $th) {
     echo json_encode(["success" => false, "message" => "ALGO SALIO MAL $th"]);

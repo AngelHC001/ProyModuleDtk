@@ -12,12 +12,13 @@ export function useUploadCallbacks(uploadData){
                 method:'POST',
                 body: uploadData
             });
-
-            if(!response.ok){
-                throw new Error("Algo salio mal");
+            
+            const data = await response.json()
+            if(!response.ok || data.success === false){
+                throw new Error(data.message || 'Error al procesar solicitud');
             }
-        
-            return response.json();
+            
+            return data;
         },
         onSuccess: () => {queryClient.invalidateQueries({queryKey})},
         onError: (err) => { console.error('ERROR AL SUBIR ARCHIVO', err.message) }
@@ -30,15 +31,16 @@ export function useUploadCallbacks(uploadData){
                 body: JSON.stringify({path: uploadData})            
             });
             
-            if(!response.ok){
-                throw new Error("Algo salio mal");
+            const data = await response.json()
+            if(!response.ok || data.success === false){
+                throw new Error(data.message || 'Error al procesar solicitud');
             }
-
-            return response.json();
+        
+            return data;
         },
         onSuccess: () => { queryClient.invalidateQueries({queryKey}) },
-        onError: (err) => { console.error('ERROR AL SUBIR ARCHIVO', err.message) }
+        onError: (error) => { console.error('ERROR AL BORRAR ARCHIVO', error.message) }
     });
     
-    return { uploadFile, eraseFile};
+    return { uploadFile, eraseFile };
 }

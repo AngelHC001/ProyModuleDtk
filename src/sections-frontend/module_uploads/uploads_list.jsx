@@ -6,7 +6,6 @@ import { LoadingScreen, ErrorScreen, EmptyFolder } from "../../components/source
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-
 function ItemsPanel({children}){
     return(
         <div className="col-md-6 bg-light rounded shadow">
@@ -15,7 +14,6 @@ function ItemsPanel({children}){
         </div>
     )
 }
-
 
 function FileOptions({path}){
     const { eraseFile } = useUploadCallbacks();
@@ -79,7 +77,6 @@ function FilesUploaded(){
             </div>
         )
     }
-    
     return(
         <ItemsPanel>
             <h6 className="slogan">{activeView?.folder[0].name} - {activeView?.folder[0].year}</h6>
@@ -116,7 +113,5 @@ function FilesUploaded(){
         </ItemsPanel>
     )
 }
-
-
 
 export default FilesUploaded;

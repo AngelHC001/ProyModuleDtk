@@ -16,11 +16,25 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache"); // Para compatibilidad con HTTP 1.0
 
 
-function WriteJson(int $mode, string $folderName, $fileData){
-    $jsonPath = DIRS_PATH . $folderName. ".json";
-    $jsonDoc = file_get_contents($jsonPath);
-    $data = json_decode($jsonDoc, true);
-    if(!$data){ return false; } //Existe el json?
+//AUXILIAR DE CONSULTA
+function getFilesList($foldername){
+    $json_path = DIRS_PATH . $foldername. ".json";
+    if(!file_exists($json_path)){
+        return [];
+    }
+
+    $content = file_get_contents($json_path);
+    $data = json_decode($content,true);
+    return is_array($data) ? $data : [];
+}
+
+
+function WriteJson(int $mode, string $foldername, $fileData){
+    $json_path = DIRS_PATH . $foldername. ".json";
+    $data = getFilesList($foldername);
+
+    //Existe el json?
+    if($data === []){ return false; } 
 
     //MODE 1 => PUSH
     if($mode === 1 && count($fileData) === 2){
@@ -29,43 +43,26 @@ function WriteJson(int $mode, string $folderName, $fileData){
         $key = bin2hex(random_bytes(8));
 
         //CREAR NUEVOS DATOS
-        $keyPath = $folderName ."/". $file;
-        $jsonKey = ["key" => $key, "id" => $num, "ruta" => $keyPath]; 
-        //AGREGAR NUEVOS DATOS
-        array_push($data,$jsonKey);        
-        $newData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-       
-        // Ruta del archivo donde se guardará el JSON
-        if (file_put_contents($jsonPath, $newData) === false) {
-            return false;
-        }
-
-        return true;
+        $keyPath = $foldername ."/". $file;
+        $newItem = ["key" => $key, "id" => $num, "ruta" => $keyPath]; 
+        array_push($data, $newItem);        
     }
-    else //MODE 0 => POP
+    else if($mode === 0 && count($fileData) === 1) //MODE 0 POP
     {
-        if(count($fileData) !== 1) { return false; }
         $pathItem = $fileData[0];
-
-        if(is_array($data)){
-            $newData = array_filter($data,function ($item) use($pathItem){
-                return $item['ruta'] !== $pathItem;
-            });
-        }
-
-        //GUARDAR CAMBIOS 
-        $newData = array_values($newData);
-        $newData = json_encode($newData,JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-        
-        //File_put dio falso
-        if(file_put_contents($jsonPath, $newData) === false){
-            return false;
-        }  
-         
-        return true;
-    }//if
+        $data = array_filter($data,function ($item) use($pathItem){
+                return (string)$item['ruta'] !== (string)$pathItem; });
+        $data = array_values($data);      
+    }
+    else{
+        return false;
+    }
+    
+    //GUARDAR CAMBIOS 
+    $newData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    $bytesWritten = file_put_contents($json_path, $newData);
+    return $bytesWritten !== false;
 }
-
 
 
 class FilesController {
@@ -74,22 +71,28 @@ class FilesController {
         $sigla = $_POST['sigla'] ?? 'N/A';
         $num = $_POST['num'] ?? '00';
         $year = $_POST['year'] ?? 'N/A';
-       
+
         //DIRECTORIO FIJO
         $folder = $year . "_" . $sigla;
         $endpoint = CERT_PATH . $folder;
 
-        //OBTENER ARCHIVO
-        if(isset($_FILES['docfile'])){
-            $file = $_FILES['docfile'];
-            $fileName = $file['name'];
-            $fileTmpPath = $file['tmp_name'];
+        //FILTRAR NUMERO PARA EVITAR DUPLICADOS
+        $data = getFilesList($folder);
+        foreach($data as $item){
+            if((string)$item['id'] === (string)$num){
+                return ["success" => false, "message" => "NUMERO DE ARCHIVO YA EXISTE " . $num];
+            }
         }
-        else{
+
+        //OBTENER ARCHIVO
+        if(!isset($_FILES['docfile'])){
             return ["success" => false, "message" => "NO HAY ARCHIVOS CARGADOS"];
         }
+        $file = $_FILES['docfile'];
+        $fileName = $file['name'];
+        $fileTmpPath = $file['tmp_name'];
         
-        //EXISTE CARPETA
+        //EXISTE CARPETA?
         if(!is_dir($endpoint)){
             return ["success" => false, "message" => "LA CARPETA NO EXISTE"];
         }
@@ -107,6 +110,7 @@ class FilesController {
 
         return ["success" => true, "message" => "ARCHIVO AGREGADO AL DIRECTORIO"];
     }
+
 
     
     //DELETE
@@ -157,6 +161,6 @@ try
     }
 
 } catch (Exception $th) {
-    echo json_encode(["success" => false, "message" => "ALGO SALIO MAL $th"]);
+    echo json_encode(["success" => false, "message" => "ALGO SALIO MAL " . $th -> getMessage()]);
 }
 ?>

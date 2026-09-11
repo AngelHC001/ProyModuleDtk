@@ -13,7 +13,7 @@ function FileUploadForm(){
     const selectRef = useRef();
 
     const thisYear = new Date().getFullYear().toString();
-    const [message, setMessage] = useState({text:'', alertColor:'alert-secondary'});
+    const [message, setMessage] = useState({text:'', color:''});
     const [folio, setFolio] = useState({sigla:'CCCC', num: 1, year:thisYear}); 
     const [file, setFile] = useState(null); 
     const fileInputRef = useRef();
@@ -37,25 +37,28 @@ function FileUploadForm(){
         }
     }
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        try{
-            const formData = new FormData();
-            formData.append('sigla',folio.sigla);
-            formData.append('num',folio.num);
-            formData.append('year',folio.year);
-            
-            if(file){
-                formData.append('docfile',file);
-            }   
-            
-            await uploadFile.mutateAsync(formData);
-            setFile(null);
-            setMessage({text: 'Archivo Subido', alertColor: 'alert-success'});
-        }catch(err){
-            console.log('ERROR AL SUBIR ARCHIVO ' +err.message);
-            setMessage({text: 'Algo salio mal', alertColor: 'alert-danger'});
-        }        
+        
+        const formData = new FormData();
+        formData.append('sigla',folio.sigla);
+        formData.append('num',folio.num);
+        formData.append('year',folio.year);
+        
+        if(file){
+            formData.append('docfile',file);
+        }   
+        
+        uploadFile.mutate(formData,{
+            onSuccess: (data) => {
+                handleClear();
+                setMessage({text: data.message, color: 'success'});
+            },
+            onError: (error) =>{
+                console.error(error.message);
+                setMessage({text: error.message, color: 'danger'});
+            }
+        }); 
     }
  
     //Funcion Fetch
@@ -86,7 +89,7 @@ function FileUploadForm(){
             <h1 className="slogan-2">Cargar Constancias</h1>
             <small className="mb-2">Sube archivos para la carpeta seleccionada</small>
             
-            <div className={`alert ${message.alertColor}`}>
+            <div className={`alert alert-${message.color}`}>
                 {message.text}
             </div>
 
